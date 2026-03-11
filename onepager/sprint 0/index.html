@@ -5,174 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Big Hero 6</title>
-    <style>
-        body {
-            overflow-x: hidden;
-            width: 100%;
-        }
-
-        html {
-            scroll-padding-top: 75px;
-            scroll-behavior: smooth;
-        }
-
-        .mobile-only {
-            display: none
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 10%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: #D6C2C7;
-            font-family: 'Neuething Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-        }
-
-        .nav-links a {
-            color: #732942;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 18px;
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 5px;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background-color: #732942;
-            border-radius: 2px;
-        }
-
-        .carousel-container {
-            position: relative;
-            width: 100vw;
-            margin: auto;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .carousel-track {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            width: 100vw;
-        }
-
-        .carousel-track img {
-            min-width: 80vw;
-            margin-left: 10vw;
-            margin-right: 10vw;
-        }
-
-        .arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 60px;
-            font-weight: bold;
-            color: #732942;
-            z-index: 20;
-            user-select: none;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-        }
-
-        .prev::before {
-            content: "← ";
-        }
-
-        .next::before {
-            content: " →";
-        }
-
-        .prev {
-            left: 2vw;
-        }
-
-        .next {
-            right: 2vw;
-        }
-
-        .title-kernwaarden {
-            font-family: Coolvetica, arial, sans-serif;
-            font-size: 8em;
-            text-align: center;
-            font-style: italic;
-            color: #732942;
-        }
-
-        @media (max-width: 1000px) {
-            .title-kernwaarden {
-                font-size: 6em;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .navbar {
-                padding: 10px 5%;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: #D6C2C7;
-                padding: 20px 0;
-                gap: 20px;
-                text-align: center;
-                box-shadow: 0 4px 5px rgba(0, 0, 0, 0.05);
-            }
-
-            .nav-links.active {
-                display: flex;
-                padding: 5px 0;
-            }
-
-            .desktop-only {
-                display: none;
-            }
-
-            .mobile-only {
-                display: block;
-                width: 100%;
-                height: auto;
-            }
-
-            .arrow {
-                font-size: 20px;
-            }
-
-            .title-kernwaarden {
-                font-size: 4em;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
@@ -195,60 +28,6 @@
         </div>
     </nav>
 
-    <script>
-        function toggleMenu() {
-            const navLinks = document.getElementById('navLinks');
-            if (window.innerWidth > 700) return;
-
-            const isOpening = !navLinks.classList.contains('active');
-            navLinks.classList.toggle('active');
-
-            if (isOpening) {
-                navLinks.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                navLinks.style.overflow = 'hidden';
-
-                navLinks.animate([
-                    { height: '0px', opacity: 0, transform: 'translateY(-10px)' },
-                    { height: navLinks.scrollHeight + 'px', opacity: 1, transform: 'translateY(0)' }
-                ], {
-                    duration: 400,
-                    easing: 'ease-out',
-                    fill: 'forwards'
-                });
-            } else {
-                const closingAnim = navLinks.animate([
-                    { height: navLinks.scrollHeight + 'px', opacity: 1, transform: 'translateY(0)' },
-                    { height: '0px', opacity: 0, transform: 'translateY(-10px)' }
-                ], {
-                    duration: 300,
-                    easing: 'ease-in',
-                    fill: 'forwards'
-                });
-
-                closingAnim.onfinish = () => {
-                    if (!navLinks.classList.contains('active')) {
-                        navLinks.style.display = 'none';
-                    }
-                };
-            }
-        }
-
-        window.addEventListener('resize', () => {
-            const navLinks = document.getElementById('navLinks');
-            if (window.innerWidth > 700) {
-                navLinks.style.display = '';
-                navLinks.style.flexDirection = '';
-                navLinks.style.height = '';
-                navLinks.style.opacity = '';
-                navLinks.style.transform = '';
-                navLinks.classList.remove('active');
-
-                navLinks.getAnimations().forEach(anim => anim.cancel());
-            }
-        });
-
-    </script>
     <header style="display: flex; justify-content: center; align-items: center;">
         <img src="images/desktop/Header.png" id="header" class="desktop-only" alt="" style="width: 80vw; height: auto;">
         <img src="images/mobile/Header.png" class="mobile-only" alt="">
@@ -285,24 +64,6 @@
 
                 <div class="arrow next" onclick="moveSlide(1)"></div>
             </div>
-            <script>
-                let currentSlide = 0;
-                const track = document.getElementById('track');
-                const slides = track.children;
-
-                function moveSlide(direction) {
-                    currentSlide += direction;
-
-                    if (currentSlide < 0) {
-                        currentSlide = slides.length - 1;
-                    } else if (currentSlide >= slides.length) {
-                        currentSlide = 0;
-                    }
-
-                    const moveAmount = -currentSlide * 100;
-                    track.style.transform = `translateX(${moveAmount}vw)`;
-                }
-            </script>
         </div>
         <img src="images/desktop/Situaties.png" id="situaties" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden;">
@@ -322,6 +83,7 @@
             <img src="images/desktop/Footer.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
         </a>
     </footer>
+    <script type="text/javascript" src="main.js"></script>
 </body>
 
 </html>
