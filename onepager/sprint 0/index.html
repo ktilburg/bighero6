@@ -96,11 +96,21 @@
             border-radius: 50%;
         }
 
-        .prev::before { content: "← "; } 
-        .next::before { content: " →"; }
+        .prev::before {
+            content: "← ";
+        }
 
-        .prev { left: 2vw; }
-        .next { right: 2vw; }
+        .next::before {
+            content: " →";
+        }
+
+        .prev {
+            left: 2vw;
+        }
+
+        .next {
+            right: 2vw;
+        }
 
         .title-kernwaarden {
             font-family: Coolvetica, arial, sans-serif;
@@ -154,8 +164,10 @@
                 height: auto;
             }
 
-            .arrow { font-size: 20px; }
-            
+            .arrow {
+                font-size: 20px;
+            }
+
             .title-kernwaarden {
                 font-size: 4em;
             }
@@ -259,11 +271,10 @@
         <img src="images/mobile/Ons team frame.png" class="mobile-only" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden;">
         <div>
-<h1 class="title-kernwaarden">Onze kernwaarden</h1>
-            <!-- <img src="images/desktop/Onze kernwaarden (non-responsive).png" alt="" style="width: 80vw; height: auto;"> -->
+            <h1 class="title-kernwaarden">Onze kernwaarden</h1>
             <div class="carousel-container">
                 <div class="arrow prev" onclick="moveSlide(-1)"></div>
-                
+
                 <div class="carousel-track" id="track">
                     <img src="images/kernwaarden/1vrijheid.png" alt="Vrijheid">
                     <img src="images/kernwaarden/2betrouwbaarheid.png" alt="Betrouwbaarheid">
