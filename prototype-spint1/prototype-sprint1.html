@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotterdam Activiteiten - Categorie Kleuren</title>
+    <style>
+        :root {
+            --rdam-bordeaux: #883e4c;
+            --rdam-pink: #f7b7cf;
+            --rdam-soft-red: #c04455;
+            --rdam-white: #ffffff;
+            --font-main: 'Segoe UI', 'Arial', sans-serif;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--rdam-bordeaux);
+            color: var(--rdam-white);
+            padding: 60px 20px 100px 20px;
+            position: relative;
+            text-align: center;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 12px;
+            background-color: var(--rdam-pink);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 80px;
+            background-color: #f9f9f9;
+            clip-path: polygon(0 100%, 100% 0, 100% 100%);
+        }
+
+        header h1 {
+            font-family: var(--font-main);
+            font-weight: 900;
+            font-size: 3.5rem;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        /* --- CONTROLS --- */
+        .main-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px auto 60px auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn {
+            border: none;
+            padding: 16px 35px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-random { background: var(--rdam-soft-red); color: white; }
+        .btn-none { background: white; color: var(--rdam-bordeaux); border: 2px solid var(--rdam-bordeaux); }
+
+        /* --- GRID & DYNAMISCHE CARDS --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 80px 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+
+        .card {
+            background: white;
+            padding: 30px;
+            position: relative;
+            /* Border kleur wordt via JS gezet */
+            border-left: 10px solid var(--rdam-bordeaux); 
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
+
+        .card h3 {
+            font-family: var(--font-main);
+            font-weight: 900;
+            color: var(--rdam-bordeaux);
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+
+        .cat-tag {
+            font-size: 0.75rem;
+            font-weight: 900;
+            padding: 4px 10px;
+            display: inline-block;
+            color: white; /* Tekst wit op de gekleurde achtergrond */
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .like-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none; border: none;
+            font-size: 1.6rem; color: #eee; cursor: pointer;
+        }
+        .like-btn.liked { color: var(--rdam-soft-red); }
+
+        /* --- MODAL --- */
+        #overlay {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75); z-index: 1000;
+            align-items: center; justify-content: center; backdrop-filter: blur(4px);
+        }
+        .modal {
+            background: white; padding: 40px; width: 90%; max-width: 500px;
+            border-bottom: 10px solid var(--rdam-bordeaux);
+        }
+        .modal h2 { font-weight: 900; color: var(--rdam-bordeaux); font-size: 2.2rem; margin: 0 0 15px 0; }
+        select { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ddd; }
+        .modal-btns { display: flex; gap: 15px; }
+        .btn-confirm { background: var(--rdam-bordeaux); color: white; flex: 2; padding: 15px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-close { background: #f0f0f0; color: #444; flex: 1; padding: 15px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Huidige Activiteiten</h1>
+    <p>Ontdek Rotterdam door nieuwe ervaringen. Elke kleur staat voor een ander type verbinding in de stad.</p>
+</header>
+
+<div class="main-actions">
+    <button class="btn btn-random" onclick="generateRandom()">🎲 Willekeurige Activiteit</button>
+    <button class="btn btn-none" onclick="openModal('rejection')">✖ Geen Interesse</button>
+</div>
+
+<div class="container">
+    <div id="activity-grid" class="grid"></div>
+</div>
+
+<div id="overlay">
+    <div id="modal-content" class="modal"></div>
+</div>
+
+<script>
+    // Kleurenpalet voor de categorieën (passend bij de huisstijl)
+    const catColors = {
+        "Sport": "#5d7a8c",         // Gedempt blauw
+        "Natuur": "#6b8e23",        // Olijfgroen
+        "Cultuur": "#c04455",       // Gedempt rood
+        "Sociaal": "#883e4c",       // Bordeaux
+        "Shopping": "#d4a373",      // Zand/Beige
+        "Sightseeing": "#4a4e69",   // Donkergrijs/blauw
+        "Ontspanning": "#9a8c98",   // Mauve/Grijs
+        "Eten": "#bc6c25",          // Karamel
+        "Muziek": "#6d597a",        // Gedempt paars
+        "Groen": "#2a9d8f",         // Teal
+        "Creatief": "#e9c46a",      // Okergeel
+        "Feest": "#f4a261",         // Oranje-achtig
+        "Historie": "#606c38",      // Donkergroen
+        "Educatie": "#264653",      // Diepblauw
+        "Duurzaam": "#8ab17d"       // Lichtgroen
+    };
+
+    const activities = [
+        { name: "Salsa aan de kade", cat: "Sport", loc: "Wilhelminapier", desc: "Verruil je scherm voor de dansvloer." },
+        { name: "Botanische wandeling", cat: "Natuur", loc: "Trompenburg", desc: "Even helemaal offline tussen het groen." },
+        { name: "Street art tour", cat: "Cultuur", loc: "Centrum", desc: "De stad als je canvas, ontdek het samen." },
+        { name: "Schaakmiddag bieb", cat: "Sociaal", loc: "Blaak", desc: "Focus en strategie in de echte wereld." },
+        { name: "Suppen op de rotte", cat: "Sport", loc: "Crooswijk", desc: "Balans vinden op het water." },
+        { name: "Vintage markt", cat: "Shopping", loc: "Noord", desc: "Schatzoeken buiten de webshops om." },
+        { name: "Euromast beklimmen", cat: "Sightseeing", loc: "Park", desc: "Bekijk de stad vanuit een nieuw perspectief." },
+        { name: "Kino filmavond", cat: "Cultuur", loc: "West", desc: "Samen film kijken in een echte zaal." },
+        { name: "Yoga in het park", cat: "Ontspanning", loc: "Euromast", desc: "Zen worden in de buitenlucht." },
+        { name: "Markthal proeverij", cat: "Eten", loc: "Centrum", desc: "Smaak beleef je niet via een app." },
+        { name: "Bootcamp training", cat: "Sport", loc: "Blijdorp", desc: "Samen zweten bouwt een sterkere band." },
+        { name: "Creatief café", cat: "Sociaal", loc: "Wijkhub", desc: "Maak iets tastbaars met je handen." },
+        { name: "Jazz in dizzy", cat: "Muziek", loc: "Centrum", desc: "Live muziek zoals het bedoeld is." },
+        { name: "Voedseltuin hulp", cat: "Groen", loc: "Keilewerf", desc: "Handen uit de mouwen voor de buurt." },
+        { name: "Foto workshop", cat: "Creatief", loc: "Zuid", desc: "Leg de skyline vast met je eigen ogen." },
+        { name: "Bierproeverij", cat: "Eten", loc: "Katendrecht", desc: "Lokale smaken ontdekken met vrienden." },
+        { name: "Silent disco dak", cat: "Feest", loc: "Hofbogen", desc: "Dansen op hoogte, verbonden via muziek." },
+        { name: "Delfshaven wandeling", cat: "Historie", loc: "West", desc: "Duik in het verleden van de haven." },
+        { name: "Surinaams koken", cat: "Eten", loc: "Kruiskade", desc: "Geuren en kleuren uit de Rotterdamse keuken." },
+        { name: "Pubquiz avond", cat: "Sociaal", loc: "Oude Haven", desc: "Test je kennis in een echt team." },
+        { name: "SS Rotterdam tour", cat: "Sightseeing", loc: "Katendrecht", desc: "Aan boord van een icoon." },
+        { name: "Padel toernooi", cat: "Sport", loc: "Victoria", desc: "De meest sociale sport van dit moment." },
+        { name: "Debat in Arminius", cat: "Educatie", loc: "Museumpark", desc: "Praat mee over de toekomst van de stad." },
+        { name: "Blijdorp bezoek", cat: "Natuur", loc: "Blijdorp", desc: "Dieren spotten in de achtertuin." },
+        { name: "Klimmuur west", cat: "Sport", loc: "Keileweg", desc: "Samen de top bereiken." },
+        { name: "Vogelspotten eiland", cat: "Natuur", loc: "Zuid", desc: "Rust zoeken onder de rook van de brug." },
+        { name: "Repair café", cat: "Duurzaam", loc: "BlueCity", desc: "Fix je spullen en maak een praatje." },
+        { name: "Skatepark sessie", cat: "Sport", loc: "Westblaak", desc: "Show je skills op de straat." },
+        { name: "Filosofie avond", cat: "Educatie", loc: "Bieb", desc: "Diepe gesprekken, face-to-face." },
+        { name: "Erasmusbrug loop", cat: "Sport", loc: "Centrum", desc: "De klassieke route over de Maas." }
+    ];
+
+    let likedCategories = JSON.parse(localStorage.getItem('likedCats')) || [];
+    let db;
+
+    // Database connectie
+    const request = indexedDB.open("RdamV4DB", 1);
+    request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        db.createObjectStore("logs", { autoIncrement: true });
+    };
+    request.onsuccess = (e) => { db = e.target.result; };
+
+    function renderGrid() {
+        const grid = document.getElementById('activity-grid');
+        grid.innerHTML = '';
+        activities.forEach(a => {
+            const isLiked = likedCategories.includes(a.cat) ? 'liked' : '';
+            const color = catColors[a.cat] || '#883e4c'; // Fallback bordeaux
+            
+            const card = document.createElement('div');
+            card.className = 'card';
+            // Dynamische styling per card
+            card.style.borderLeftColor = color;
+            
+            card.innerHTML = `
+                <button class="like-btn ${isLiked}" onclick="toggleLike(event, '${a.cat}')">❤</button>
+                <div class="cat-tag" style="background-color: ${color}">${a.cat}</div>
+                <h3>${a.name}</h3>
+                <p style="font-size:0.85rem; color: #888;">${a.loc}</p>
+            `;
+            card.onclick = () => openModal('participation', a);
+            grid.appendChild(card);
+        });
+    }
+
+    function toggleLike(e, cat) {
+        e.stopPropagation();
+        if(likedCategories.includes(cat)) {
+            likedCategories = likedCategories.filter(c => c !== cat);
+        } else {
+            likedCategories.push(cat);
+        }
+        localStorage.setItem('likedCats', JSON.stringify(likedCategories));
+        renderGrid();
+    }
+
+    function openModal(type, data = null) {
+        const modal = document.getElementById('modal-content');
+        window.currentData = data;
+
+        if(type === 'participation') {
+            const color = catColors[data.cat] || '#883e4c';
+            modal.innerHTML = `
+                <div class="cat-tag" style="background-color: ${color}">${data.cat}</div>
+                <h2>${data.name}</h2>
+                <p style="color: #444;">${data.desc}</p>
+                <p><strong>Waarom kies je voor deze actie?</strong></p>
+                <select id="reason-select">
+                    <option value="loneliness">Eenzaamheid doorbreken</option>
+                    <option value="boredom">Verveling tegengaan</option>
+                    <option value="new_people">Nieuwe mensen ontmoeten</option>
+                    <option value="discover">Nieuwe interesses ontdekken</option>
+                    <option value="other">Andere reden</option>
+                </select>
+                <div class="modal-btns">
+                    <button class="btn-confirm" onclick="save('Deelname')">Bevestig</button>
+                    <button class="btn-close" onclick="closeModal()">Terug</button>
+                </div>
+            `;
+        } else {
+            modal.innerHTML = `
+                <h2>Geen match?</h2>
+                <p>Wat kunnen we verbeteren aan de selectie?</p>
+                <select id="reason-select">
+                    <option value="no_interest">Geen interesse in thema's</option>
+                    <option value="transport">Locaties niet goed bereikbaar</option>
+                    <option value="timing">Tijden komen niet uit</option>
+                    <option value="other">Anders</option>
+                </select>
+                <div class="modal-btns">
+                    <button class="btn-confirm" onclick="save('Afgewezen')">Feedback Versturen</button>
+                    <button class="btn-close" onclick="closeModal()">Sluit</button>
+                </div>
+            `;
+        }
+        document.getElementById('overlay').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('overlay').style.display = 'none'; }
+
+    function generateRandom() {
+        let list = activities;
+        if(confirm("Focus op je hartjes?") && likedCategories.length > 0) {
+            list = activities.filter(a => likedCategories.includes(a.cat));
+        }
+        openModal('participation', list[Math.floor(Math.random() * list.length)]);
+    }
+
+    function save(type) {
+        const entry = {
+            type,
+            act: window.currentData ? window.currentData.name : 'Nvt',
+            cat: window.currentData ? window.currentData.cat : 'Nvt',
+            reason: document.getElementById('reason-select').value,
+            time: new Date().toLocaleString()
+        };
+        const tx = db.transaction("logs", "readwrite");
+        tx.objectStore("logs").add(entry);
+        tx.oncomplete = () => {
+            alert("Bedankt voor je input!");
+            closeModal();
+        };
+    }
+
+    renderGrid();
+</script>
+
+</body>
+</html>
