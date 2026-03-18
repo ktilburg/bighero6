@@ -24,13 +24,15 @@
         <div class="nav-links" id="navLinks">
             <a href="#wie-zijn-wij" onclick="toggleMenu()">Over ons</a>
             <a href="#situaties" onclick="toggleMenu()">Project</a>
-            <a href="#ons-proces" onclick="toggleMenu()">Proces</a>
+            <a href="#insights" onclick="toggleMenu()">Insights</a>
         </div>
     </nav>
 
     <header style="display: flex; justify-content: center; align-items: center;">
-        <img src="images/desktop/Header.png" id="header" class="desktop-only" alt="" style="width: 80vw; height: auto;">
-        <img src="images/mobile/Header.png" class="mobile-only" alt="">
+        <div id="header" style="display: flex; justify-content: center; align-items: center; width: 100%;">
+            <img src="images/desktop/Header.png" class="desktop-only" alt="" style="width: 80vw; height: auto;">
+            <img src="images/mobile/Header.png" class="mobile-only" alt="">
+        </div>
     </header>
     <main style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
         <div id="wie-zijn-wij" style="display: flex; justify-content: center; width: 100%;">
@@ -63,12 +65,15 @@
                 </div>
 
                 <div class="arrow next" onclick="moveSlide(1)"></div>
+
             </div>
         </div>
         <img src="images/desktop/Situaties.png" id="situaties" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden;">
         <img src="images/desktop/Ontwerpvragen.png" alt="" style="width: 50vw; height: auto;">
-        <img src="images/desktop/Ons proces.png" id="ons-proces" alt=""
+        <img src="images/desktop/Insights algemeen.png" id="insights" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+        <img src="images/desktop/Key insights.png" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden;">
         <img src="images/desktop/Next steps doel.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
         <img src="images/desktop/Next steps onderzoek.png" alt=""
