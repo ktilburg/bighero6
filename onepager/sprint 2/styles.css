@@ -1,0 +1,166 @@
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+html {
+    scroll-padding-top: 75px;
+    scroll-behavior: smooth;
+}
+
+.mobile-only {
+    display: none
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #D6C2C7;
+    font-family: 'Neuething Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+}
+
+.nav-links a {
+    color: #732942;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background-color: #732942;
+    border-radius: 2px;
+}
+
+.carousel-container {
+    position: relative;
+    width: 100vw;
+    margin: auto;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100vw;
+}
+
+.carousel-track img {
+    min-width: 80vw;
+    margin-left: 10vw;
+    margin-right: 10vw;
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 60px;
+    font-weight: bold;
+    color: #732942;
+    z-index: 20;
+    user-select: none;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+}
+
+.prev::before {
+    content: "← ";
+}
+
+.next::before {
+    content: " →";
+}
+
+.prev {
+    left: 2vw;
+}
+
+.next {
+    right: 2vw;
+}
+
+.title-kernwaarden {
+    font-family: Coolvetica, arial, sans-serif;
+    font-size: 8em;
+    text-align: center;
+    font-style: italic;
+    color: #732942;
+}
+
+@media (max-width: 1000px) {
+    .title-kernwaarden {
+        font-size: 6em;
+    }
+}
+
+@media (max-width: 700px) {
+    .navbar {
+        padding: 10px 5%;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #D6C2C7;
+        padding: 20px 0;
+        gap: 20px;
+        text-align: center;
+        box-shadow: 0 4px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-links.active {
+        display: flex;
+        padding: 5px 0;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+
+    .mobile-only {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .arrow {
+        font-size: 20px;
+    }
+
+    .title-kernwaarden {
+        font-size: 4em;
+    }
+}
