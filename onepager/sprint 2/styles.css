@@ -51,6 +51,70 @@ html {
     border-radius: 2px;
 }
 
+.kernwaarden-section {
+    width: 100vw;
+    background-color: #ffffff;
+    padding: 40px 0;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%); 
+    box-sizing: border-box;
+}
+
+.team-section-container {
+    width: 100vw;
+    background-color: #D6C2C7;
+    margin-bottom: 50px;
+    padding: 40px 0;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%); 
+    box-sizing: border-box;
+}
+
+.collapsible-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    gap: 20px;
+    width: 100%;
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, opacity 0.3s ease;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.team-section-container .title-kernwaarden {
+    margin: 0;
+}
+
+.arrow-icon {
+    font-size: 3rem;
+    color: #732942;
+    transition: transform 0.4s ease;
+}
+
+.content-open {
+    max-height: 5000px;
+    opacity: 1;
+    margin-top: 20px;
+}
+
+.arrow-rotate {
+    transform: rotate(180deg);
+}
+
 .carousel-container {
     position: relative;
     width: 100vw;
@@ -67,7 +131,7 @@ html {
     width: 100vw;
 }
 
-.carousel-track img {
+#track img {
     min-width: 80vw;
     margin-left: 10vw;
     margin-right: 10vw;
@@ -110,6 +174,66 @@ html {
     text-align: center;
     font-style: italic;
     color: #732942;
+}
+
+.persona-section {
+    width: 100vw;      
+    position: relative; 
+    padding: 0 0vw; 
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.persona-section .arrow {
+    position: absolute;
+    top: 50%;           
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 100;       
+}
+
+.persona-container {
+    width: 60vw;
+    margin: 0 auto;     
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: flex-start !important; 
+}
+
+.persona-section .prev {
+    left: 10vw;        
+    transform: translateY(-50%) translateX(-50%); 
+}
+
+.persona-section .next {
+    right: 10vw;       
+    transform: translateY(-50%) translateX(50%); 
+}
+
+#personaTrack {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.persona-group {
+    min-width: 60vw; 
+    width: 60vw;
+    display: flex;
+    justify-content: center; 
+    gap: 30px; 
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.persona-img {
+    width: 27.5vw !important; 
+    max-width: 27.5vw;
+    height: auto;
+    object-fit: contain;
+    min-width: unset !important;
 }
 
 @media (max-width: 1000px) {
