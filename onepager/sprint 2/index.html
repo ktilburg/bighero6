@@ -23,7 +23,7 @@
 
         <div class="nav-links" id="navLinks">
             <a href="#wie-zijn-wij" onclick="toggleMenu()">Over ons</a>
-            <a href="#situaties" onclick="toggleMenu()">Project</a>
+            <a href="#ontwerpvragen" onclick="toggleMenu()">Project</a>
             <a href="#insights" onclick="toggleMenu()">Insights</a>
         </div>
     </nav>
@@ -34,28 +34,23 @@
             <img src="images/mobile/Header.png" class="mobile-only" alt="">
         </div>
     </header>
-    <main style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
-        <div id="wie-zijn-wij" style="display: flex; justify-content: center; width: 100%;">
+    <main style="display: flex; flex-direction: column; width: 100%; overflow-x: hidden; align-items: center;">
+        <div class="team-section-container">
+    <div id="wie-zijn-wij" class="collapsible-header" onclick="toggleTeamSection()">
+        <h1 class="title-kernwaarden">Wie zijn wij?</h1>
+        <span id="team-arrow" class="arrow-icon">▼</span>
+    </div>
 
-            <img src="images/desktop/Wie zijn wij.png" class="desktop-only"
-                alt="Wie zijn wij?... Big Hero 6 staat voor samenwerking, innovatie en impact. Net als in de film combineren wij verschillende talenten om samen tot één krachtig en doordacht eindresultaat te komen. Daarnaast fungeert Baymax in de film als een mentale steun voor Hiro: een companion die hem helpt wanneer hij het moeilijk heeft. Dit sluit aan bij ons uiteindelijke doel: jongeren ondersteunen zodat zij zich beter in hun vel voelen, onder andere door het bevorderen van sociaal contact"
-                style="width: 80vw; height: auto;">
-
-            <img src="images/mobile/Wie zijn wij.png" class="mobile-only"
-                alt="Wie zijn wij?... Big Hero 6 staat voor samenwerking, innovatie en impact. Net als in de film combineren wij verschillende talenten om samen tot één krachtig en doordacht eindresultaat te komen. Daarnaast fungeert Baymax in de film als een mentale steun voor Hiro: een companion die hem helpt wanneer hij het moeilijk heeft. Dit sluit aan bij ons uiteindelijke doel: jongeren ondersteunen zodat zij zich beter in hun vel voelen, onder andere door het bevorderen van sociaal contact"
-                style="width: 80vw; height: auto;">
-
+    <div id="team-content" class="collapsible-content">
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <img src="images/desktop/Wie zijn wij.png" class="desktop-only" alt="Wie zijn wij?..." style="width: 80vw; height: auto;">
+            <img src="images/mobile/Wie zijn wij.png" class="mobile-only" alt="Wie zijn wij?..." style="width: 80vw; height: auto;">
         </div>
 
-        <img src="images/desktop/Ons team frame.png" class="desktop-only" alt=""
-            style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/mobile/Ons team frame.png" class="mobile-only" alt=""
-            style="width: 100vw; height: auto; overflow-x: hidden;">
-        <div>
+        <div class="kernwaarden-section">
             <h1 class="title-kernwaarden">Onze kernwaarden</h1>
             <div class="carousel-container">
                 <div class="arrow prev" onclick="moveSlide(-1)"></div>
-
                 <div class="carousel-track" id="track">
                     <img src="images/kernwaarden/1vrijheid.png" alt="Vrijheid">
                     <img src="images/kernwaarden/2betrouwbaarheid.png" alt="Betrouwbaarheid">
@@ -63,25 +58,53 @@
                     <img src="images/kernwaarden/4gemak.png" alt="Gemak">
                     <img src="images/kernwaarden/5eerlijkheid.png" alt="Eerlijkheid">
                 </div>
-
                 <div class="arrow next" onclick="moveSlide(1)"></div>
-
             </div>
         </div>
+
+        <img src="images/desktop/Ons team frame.png" class="desktop-only" alt="" style="width: 100vw; height: auto;">
+        <img src="images/mobile/Ons team frame.png" class="mobile-only" alt="" style="width: 100vw; height: auto;">
+    </div>
+</div>
         <img src="images/desktop/Situaties.png" id="situaties" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/desktop/Ontwerpvragen.png" alt="" style="width: 50vw; height: auto;">
-        <img src="images/desktop/Insights algemeen.png" id="insights" alt=""
+        <img src="images/desktop/Ontwerpvragen.png" id="ontwerpvragen" alt="" style="width: 50vw; height: auto;">
+            <div class="persona-section">
+                <h1 class="title-kernwaarden">Onze individuele persona's</h1>
+                <div class="arrow prev" onclick="movePersona(-1)"></div>
+                <div class="arrow next" onclick="movePersona(1)"></div>
+                <div class="carousel-container persona-container">
+
+                    <div class="carousel-track" id="personaTrack">
+                        <div class="persona-group">
+                            <img src="images/personas/ISRA persona 1.png" alt="Persona 1" class="persona-img">
+                            <img src="images/personas/YIM persona 1.png" alt="Persona 2" class="persona-img">
+                        </div>
+                        <div class="persona-group">
+                            <img src="images/personas/KOEN persona 1.png" alt="Persona 3" class="persona-img">
+                            <img src="images/personas/DAVID persona 1.png" alt="Persona 4" class="persona-img">
+                        </div>
+                        <div class="persona-group">
+                            <img src="images/personas/KIANGA persona 1.png" alt="Persona 5" class="persona-img">
+                            <img src="images/personas/JEAN PAUL persona 1.png" alt="Persona 6" class="persona-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <img src="images/desktop/Onze definitieve persona.png" id="definitieve-persona" alt=""
+            style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">        
+        <img src="images/desktop/Key insights.png" id="insights" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-        <img src="images/desktop/Key insights.png" alt=""
-            style="width: 100vw; height: auto; overflow-x: hidden;">
+        <img src="images/desktop/Concepten.png" id="concepten" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+        <img src="images/desktop/Probe.png" id="probe" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
         <img src="images/desktop/Next steps doel.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
         <img src="images/desktop/Next steps onderzoek.png" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/desktop/Next steps ontwikkelen.png" alt=""
+        <img src="images/desktop/Next steps ontwikkelen+testen.png" alt=""
             style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/desktop/Next steps testen.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/desktop/Resultaat.png" alt="" style="width: 50vw; height: auto;">
     </main>
     <footer>
         <a href="mailto:team.big.hero.6.hr@gmail.com">
