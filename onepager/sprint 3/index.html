@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Hero 6</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+    <nav class="navbar">
+        <a href="#header" style="display: flex; align-items: center; height: 75px;">
+            <img src="images/Logogroepering.png" alt="" class="desktop-only" style="width: 200px; height: auto;">
+            <img src="images/Logo.png" alt="" class="mobile-only" style="width: 50px; height: auto;">
+        </a>
+
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="nav-links" id="navLinks">
+            <a href="#wie-zijn-wij" onclick="toggleMenu()">Over ons</a>
+            <a href="#ontwerpvragen" onclick="toggleMenu()">Project</a>
+            <a href="#insights" onclick="toggleMenu()">Insights</a>
+        </div>
+    </nav>
+
+    <header style="display: flex; justify-content: center; align-items: center;">
+        <div id="header" style="display: flex; justify-content: center; align-items: center; width: 100%;">
+            <img src="images/desktop/Header.png" class="desktop-only" alt="" style="width: 80vw; height: auto;">
+            <img src="images/mobile/Header.png" class="mobile-only" alt="">
+        </div>
+    </header>
+    <main style="display: flex; flex-direction: column; width: 100%; overflow-x: hidden; align-items: center;">
+        <div class="team-section-container">
+    <div id="wie-zijn-wij" class="collapsible-header" onclick="toggleTeamSection()">
+        <h1 class="title-kernwaarden">Wie zijn wij?</h1>
+        <span id="team-arrow" class="arrow-icon">▼</span>
+    </div>
+
+    <div id="team-content" class="collapsible-content">
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <img src="images/desktop/Wie zijn wij.png" class="desktop-only" alt="Wie zijn wij?..." style="width: 80vw; height: auto;">
+            <img src="images/mobile/Wie zijn wij.png" class="mobile-only" alt="Wie zijn wij?..." style="width: 80vw; height: auto;">
+        </div>
+
+        <div class="kernwaarden-section">
+            <h1 class="title-kernwaarden">Onze kernwaarden</h1>
+            <div class="carousel-container">
+                <div class="arrow prev" onclick="moveSlide(-1)"></div>
+                <div class="carousel-track" id="track">
+                    <img src="images/kernwaarden/1vrijheid.png" alt="Vrijheid">
+                    <img src="images/kernwaarden/2betrouwbaarheid.png" alt="Betrouwbaarheid">
+                    <img src="images/kernwaarden/3veiligheid.png" alt="Veiligheid">
+                    <img src="images/kernwaarden/4gemak.png" alt="Gemak">
+                    <img src="images/kernwaarden/5eerlijkheid.png" alt="Eerlijkheid">
+                </div>
+                <div class="arrow next" onclick="moveSlide(1)"></div>
+            </div>
+        </div>
+
+        <img src="images/desktop/Ons team frame.png" class="desktop-only" alt="" style="width: 100vw; height: auto;">
+        <img src="images/mobile/Ons team frame.png" class="mobile-only" alt="" style="width: 100vw; height: auto;">
+    </div>
+</div>
+        <img src="images/desktop/Situaties.png" id="situaties" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden;">
+        <img src="images/desktop/Ontwerpvragen.png" id="ontwerpvragen" alt="" style="width: 50vw; height: auto;">
+            <div class="persona-section">
+                <h1 class="title-kernwaarden">Onze individuele persona's</h1>
+                <div class="arrow prev" onclick="movePersona(-1)"></div>
+                <div class="arrow next" onclick="movePersona(1)"></div>
+                <div class="carousel-container persona-container">
+
+                    <div class="carousel-track" id="personaTrack">
+                        <div class="persona-group">
+                            <img src="images/personas/ISRA persona 1.png" alt="Persona 1" class="persona-img">
+                            <img src="images/personas/YIM persona 1.png" alt="Persona 2" class="persona-img">
+                        </div>
+                        <div class="persona-group">
+                            <img src="images/personas/KOEN persona 1.png" alt="Persona 3" class="persona-img">
+                            <img src="images/personas/DAVID persona 1.png" alt="Persona 4" class="persona-img">
+                        </div>
+                        <div class="persona-group">
+                            <img src="images/personas/KIANGA persona 1.png" alt="Persona 5" class="persona-img">
+                            <img src="images/personas/JEAN PAUL persona 1.png" alt="Persona 6" class="persona-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <img src="images/desktop/Onze definitieve persona.png" id="definitieve-persona" alt=""
+            style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">        
+        <img src="images/desktop/Key insights.png" id="insights" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+        <img src="images/desktop/Concepten.png" id="concepten" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+        <img src="images/desktop/Probe.png" id="probe" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+        <img src="images/desktop/Next steps doel.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+        <img src="images/desktop/Next steps onderzoek.png" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden;">
+        <img src="images/desktop/Next steps ontwikkelen+testen.png" alt=""
+            style="width: 100vw; height: auto; overflow-x: hidden;">
+    </main>
+    <footer>
+        <a href="mailto:team.big.hero.6.hr@gmail.com">
+            <img src="images/desktop/Footer.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+        </a>
+    </footer>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+
+</html>
