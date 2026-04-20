@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Host Lobby</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #2c3e50; color: white; }
+        .lobby-card { background: #34495e; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 50px; }
+        .player-tag { background: #e67e22; padding: 5px 10px; border-radius: 20px; margin: 5px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="lobby-card">
+        <h1>Host Control Panel</h1>
+        
+        <div id="setup-area">
+            <h3>Instellingen</h3>
+            Ice Breakers: <input type="range" id="ice" min="0" max="10" value="3"><br>
+            Minigames: <input type="range" id="mini" min="0" max="10" value="2"><br>
+            Diepgang: <input type="range" id="deep" min="0" max="10" value="3"><br>
+            BoomIt: <input type="range" id="boom" min="0" max="10" value="2"><br>
+            <button onclick="createGame()">Maak Game Code</button>
+        </div>
+
+        <h2 id="display-code" style="font-size: 3em; color: #f1c40f;"></h2>
+        
+        <div id="lobby-area" style="display:none;">
+            <h3>Spelers in lobby:</h3>
+            <div id="player-list"></div>
+            <br>
+            <button onclick="startGame()" style="padding: 15px 30px; background: #27ae60; color: white; border: none; cursor: pointer;">START GAME</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let currentRoom = "";
+
+        function createGame() {
+            const settings = {
+                ice: document.getElementById('ice').value,
+                mini: document.getElementById('mini').value,
+                deep: document.getElementById('deep').value,
+                boom: document.getElementById('boom').value
+            };
+            socket.emit('create_game', {settings: settings});
+        }
+
+        socket.on('game_created', (data) => {
+            currentRoom = data.room;
+            document.getElementById('display-code').innerText = currentRoom;
+            document.getElementById('setup-area').style.display = 'none';
+            document.getElementById('lobby-area').style.display = 'block';
+        });
+
+        socket.on('player_joined', (players) => {
+            const list = document.getElementById('player-list');
+            list.innerHTML = "";
+            players.forEach(p => {
+                list.innerHTML += `<span class="player-tag">${p.emoji} ${p.name}</span>`;
+            });
+        });
+
+        function startGame() {
+            // Dit is de trigger voor de server!
+            socket.emit('start_game', {room: currentRoom});
+            // De host gaat zelf ook naar het gamescherm om de vragen te zien
+            window.location.href = `/game?code=${currentRoom}&name=HOST`;
+        }
+    </script>
+</body>
+</html>

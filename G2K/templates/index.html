@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>DeepConnect - Start</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #f0f2f5; padding-top: 50px; }
+        .card { background: white; padding: 30px; border-radius: 15px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 300px; }
+        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 85%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .host-link { margin-top: 20px; display: block; color: #666; text-decoration: none; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>DeepConnect</h1>
+
+        <div id="step-1">
+            <p>Voer de game code in:</p>
+            <input type="text" id="game-code" placeholder="Bijv. 1234">
+            <button onclick="checkCode()">Verder</button>
+            <p id="error-msg" style="color: red; font-size: 0.8em;"></p>
+        </div>
+
+        <div id="step-2" style="display:none;">
+            <p>Code gevonden! Hoe heet je?</p>
+            <input type="text" id="player-name" placeholder="Je naam">
+            <button onclick="joinGame()">Starten</button>
+        </div>
+
+        <a href="/host" class="host-link">Of start zelf een game als host</a>
+    </div>
+
+    <script>
+        const socket = io();
+        let validRoom = "";
+
+        function checkCode() {
+            const code = document.getElementById('game-code').value;
+            if(code) {
+                socket.emit('validate_code', {room: code});
+            }
+        }
+
+        socket.on('code_valid', (data) => {
+            if(data.valid) {
+                validRoom = data.room;
+                document.getElementById('step-1').style.display = 'none';
+                document.getElementById('step-2').style.display = 'block';
+            } else {
+                document.getElementById('error-msg').innerText = "Onbekende code. Probeer het opnieuw.";
+            }
+        });
+
+        function joinGame() {
+            const name = document.getElementById('player-name').value;
+            if(name && validRoom) {
+                // We sturen ze naar game.html met de parameters in de URL
+                window.location.href = `/game?code=${validRoom}&name=${name}`;
+            }
+        }
+    </script>
+</body>
+</html>
