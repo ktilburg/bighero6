@@ -1,0 +1,17 @@
+{
+  "ice_breakers": [
+    {"type": "open", "q": "Wat is je favoriete vakantieherinnering?"},
+    {"type": "multiple_choice", "q": "Ben je een ochtend- of avondmens?", "options": ["Ochtend", "Avond"]}
+  ],
+  "minigames": [
+    {"type": "action", "q": "Doe de beste imitatie van een bekend persoon. De rest raadt!"},
+    {"type": "scale", "q": "Hoe goed kun je multitasken?", "min": 1, "max": 10}
+  ],
+  "diepgaand": [
+    {"type": "open", "q": "Waar ben je het meest dankbaar voor deze week?"}
+  ],
+  "boomit_templates": [
+    "Wie gaf het grappigste antwoord bij: '{prev_q}'?",
+    "Op een schaal van 1-10, hoe erg genoot je van de minigame: '{prev_game}'?"
+  ]
+}
