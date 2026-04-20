@@ -2,15 +2,54 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>DeepConnect - Start</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepConnect - Join</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #f0f2f5; padding-top: 50px; }
-        .card { background: white; padding: 30px; border-radius: 15px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 300px; }
-        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { width: 85%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            text-align: center; 
+            background: #f0f2f5; 
+            margin: 0; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            width: 320px; 
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        input { width: 85%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
+        input:focus { border-color: #007bff; }
+        button { width: 93%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
         button:hover { background: #0056b3; }
-        .host-link { margin-top: 20px; display: block; color: #666; text-decoration: none; font-size: 0.9em; }
+        
+        /* De Host-knop rechtsonder */
+        .host-access {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            color: #888;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        .host-access:hover {
+            background: white;
+            color: #333;
+            border-color: #ddd;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -20,19 +59,19 @@
 
         <div id="step-1">
             <p>Voer de game code in:</p>
-            <input type="text" id="game-code" placeholder="Bijv. 1234">
+            <input type="number" id="game-code" placeholder="Code">
             <button onclick="checkCode()">Verder</button>
-            <p id="error-msg" style="color: red; font-size: 0.8em;"></p>
+            <p id="error-msg" style="color: red; font-size: 0.8em; margin-top: 10px;"></p>
         </div>
 
         <div id="step-2" style="display:none;">
-            <p>Code gevonden! Hoe heet je?</p>
+            <p>Hoe heet je?</p>
             <input type="text" id="player-name" placeholder="Je naam">
-            <button onclick="joinGame()">Starten</button>
+            <button onclick="joinWithValues()">Starten</button>
         </div>
-
-        <a href="/host" class="host-link">Of start zelf een game als host</a>
     </div>
+
+    <a href="/host" class="host-access">Host Menu</a>
 
     <script>
         const socket = io();
@@ -40,27 +79,26 @@
 
         function checkCode() {
             const code = document.getElementById('game-code').value;
-            if(code) {
-                socket.emit('validate_code', {room: code});
-            }
+            if(code) socket.emit('validate_code', {room: code});
         }
 
         socket.on('code_valid', (data) => {
             if(data.valid) {
                 validRoom = data.room;
-                document.getElementById('step-1').style.display = 'none';
-                document.getElementById('step-2').style.display = 'block';
+                if(data.custom_names === false) {
+                    window.location.href = `/game?code=${validRoom}&name=ANONIEM`;
+                } else {
+                    document.getElementById('step-1').style.display = 'none';
+                    document.getElementById('step-2').style.display = 'block';
+                }
             } else {
-                document.getElementById('error-msg').innerText = "Onbekende code. Probeer het opnieuw.";
+                document.getElementById('error-msg').innerText = "Code niet gevonden.";
             }
         });
 
-        function joinGame() {
+        function joinWithValues() {
             const name = document.getElementById('player-name').value;
-            if(name && validRoom) {
-                // We sturen ze naar game.html met de parameters in de URL
-                window.location.href = `/game?code=${validRoom}&name=${name}`;
-            }
+            if(name) window.location.href = `/game?code=${validRoom}&name=${encodeURIComponent(name)}`;
         }
     </script>
 </body>
