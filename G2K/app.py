@@ -12,17 +12,27 @@ QUESTIONS = {
         {"q": "Wat was je allereerste bijbaantje?", "type": "open"},
         {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
-        {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"}
+        {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
+        {"q": "Never have i ever. om de beurt speel never have i ever.", "type": "open"},
+        {"q": "two truths one lie Speel two truths one lie met de rest (1 leugen 2 waarheden)", "type": "open"}
     ],
     "minigames": [
         {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
         {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"},
-        {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
+        {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"},
+        {"q": "Would you rather? Zou je liever een jaar lang geen muziek horen of een jaar lang geen sociale media gebruiken?", "type": "action"},
+        {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
+        {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
+        {"q": "Would you rather? Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "action"},
     ],
     "diepgaand": [
         {"q": "Waar ben je het meest dankbaar voor van de afgelopen week?", "type": "open"},
         {"q": "Wat is een eigenschap die je echt in anderen bewondert?", "type": "open"},
-        {"q": "Wat is een droom die je nog steeds hoopt te verwezenlijken?", "type": "open"}
+        {"q": "Wat is een droom die je nog steeds hoopt te verwezenlijken?", "type": "open"},
+        {"q": "Wat is iets aan jou dat mensen niet meteen van je zouden verwachten?", "type": "open"},
+        {"q": "Waar ben je trots op?", "type": "open"},
+        {"q": "Wanneer heb je het gevoel dat iemand jou echt begrijpt? ", "type": "open"},
+        {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"}
     ],
     "boomit_templates": [
         "Wie gaf het meest verrassende antwoord op: '{prev_q}'?",
