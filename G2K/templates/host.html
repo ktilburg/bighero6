@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DeepConnect - Host</title>
+    <title>Get2Know - Host</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #2c3e50; color: white; padding-top: 50px; }
@@ -36,6 +36,13 @@
 
         <div id="lobby-area" style="display:none;">
             <h1>Code: <span id="display-code" style="color: #f1c40f;"></span></h1>
+            
+            <div style="margin: 20px 0;">
+                <img src="{{ url_for('static', filename='images/qr.png') }}" 
+                    alt="Scan to Join" 
+                    style="width: 150px; border: 4px solid white; border-radius: 10px;">
+            </div>
+
             <div id="player-list"></div>
             <br>
             <button onclick="startGame()">START HET SPEL</button>
