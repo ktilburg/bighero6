@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, emit
 import random
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'deepconnect-secure-key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
