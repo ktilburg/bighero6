@@ -18,7 +18,7 @@ QUESTIONS = {
         {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
         {"q": "Would you rather? Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "action"}
     ],
-    "activiteiten": [
+    "minigames": [
         {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
         {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"}, 
         {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
