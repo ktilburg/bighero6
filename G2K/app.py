@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FEEDBACK_FILE = os.path.join(BASE_DIR, 'feedback.xls')
 feedback_lock = Lock()
 feedback_scores = defaultdict(lambda: {'upvotes': 0, 'downvotes': 0})
-
+# Feedback systeem 
 
 def load_feedback_scores():
     if not os.path.exists(FEEDBACK_FILE):
@@ -48,28 +48,34 @@ load_feedback_scores()
 OBJECT_NAMES = ["Banaan", "Koekenpan", "Stofzuiger", "Gitaar", "Cactus", "Laptop", "Ananas", "Vliegtuig", "Watermeloen", "Tandenborstel", "Wasmachine", "Robot"]
 QUESTIONS = {
     "ice_breakers": [
-        {"q": "Wat was je allereerste bijbaantje?", "type": "open"},
-        {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
+        # {"q": "Wat was je allereerste bijbaantje?", "type": "open"},
+        # {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
-        {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
-        {"q": "Would you rather? Zou je liever een jaar lang geen muziek horen of een jaar lang geen sociale media gebruiken?", "type": "action"},
-        {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
-        {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
-        {"q": "Would you rather? Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "action"}
+        # {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
+        {"q": "Would you rather? Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "action"},
+        # {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
+        {"q": "Welke superkracht zou je hebben?", "type": "action"},
+        # {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
+        # {"q": "Would you rather? Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "action"},
+        {"q": "Wat voor serie/film/boek zou je opnieuw willen zien/lezen?", "type": "action"},
     ],
     "minigames": [
-        {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
-        {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"}, 
-        {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
+        # {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
+        # {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"},
+        {"q": "Galgje", "type": "action"},
+        {"q": "Wordchain", "type": "action"},
+        {"q": "Thirthy seconds", "type": "action."},
+        # {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
     ],
-    "diepgaand": [
-        {"q": "Waar ben je het meest dankbaar voor van de afgelopen week?", "type": "open"},
+    "get2know": [
+        # {"q": "Waar ben je het meest dankbaar voor van de afgelopen week?", "type": "open"},
         {"q": "Wat is een eigenschap die je echt in anderen bewondert?", "type": "open"},
-        {"q": "Wat is een droom die je nog steeds hoopt te verwezenlijken?", "type": "open"},
-        {"q": "Wat is iets aan jou dat mensen niet meteen van je zouden verwachten?", "type": "open"},
+        {"q": "Wat is iets wat je echt wilt doen/leren dit jaar?", "type": "open"},
+        # {"q": "Wat is iets aan jou dat mensen niet meteen van je zouden verwachten?", "type": "open"},
         {"q": "Waar ben je trots op?", "type": "open"},
-        {"q": "Wanneer heb je het gevoel dat iemand jou echt begrijpt? ", "type": "open"},
-        {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"}
+        # {"q": "Wanneer heb je het gevoel dat iemand jou echt begrijpt? ", "type": "open"},
+        # {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"},
+        {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua persoonlijkheid of juist totaal anders is?", "type": "open"}
     ],
     "boomit_templates": [
         "Wie gaf het meest verrassende antwoord op: '{prev_q}'?",
@@ -78,6 +84,58 @@ QUESTIONS = {
 }
 
 games = {}
+
+
+def build_question_queue(settings):
+    ice_breakers = [('ice_breakers', q) for q in random.sample(
+        QUESTIONS['ice_breakers'],
+        min(int(settings['ice']), len(QUESTIONS['ice_breakers']))
+    )]
+
+    minigames = [('minigames', q) for q in random.sample(
+        QUESTIONS['minigames'],
+        min(int(settings['mini']), len(QUESTIONS['minigames']))
+    )]
+
+    get2know = [('get2know', q) for q in random.sample(
+        QUESTIONS['get2know'],
+        min(int(settings['deep']), len(QUESTIONS['get2know']))
+    )]
+
+    queue = list(ice_breakers)
+
+    if get2know:
+        queue.append(get2know.pop(0))
+
+    active_pools = {
+        'minigames': minigames,
+        'get2know': get2know,
+    }
+    last_category = queue[-1][0] if queue else None
+    streak = 1 if last_category in active_pools else 0
+
+    while active_pools['minigames'] or active_pools['get2know']:
+        available_categories = [
+            category for category, pool in active_pools.items() if pool
+        ]
+
+        if last_category in available_categories and streak >= 2 and len(available_categories) > 1:
+            available_categories = [category for category in available_categories if category != last_category]
+
+        if not available_categories:
+            available_categories = [category for category, pool in active_pools.items() if pool]
+
+        next_category = random.choice(available_categories)
+        queue.append(active_pools[next_category].pop(0))
+
+        if next_category == last_category:
+            streak += 1
+        else:
+            last_category = next_category
+            streak = 1
+
+    queue += [('boomit', None) for _ in range(int(settings['boom']))]
+    return queue
 
 @app.route('/')
 def index(): return render_template('index.html')
@@ -147,14 +205,7 @@ def on_start(data):
     room = data.get('room')
     if room in games:
         game = games[room]
-        s = game['settings']
-        queue = [('ice_breakers', q) for q in random.sample(QUESTIONS['ice_breakers'], min(int(s['ice']), len(QUESTIONS['ice_breakers'])))]
-        others = [('minigames', q) for q in random.sample(QUESTIONS['minigames'], min(int(s['mini']), len(QUESTIONS['minigames'])))]
-        others += [('diepgaand', q) for q in random.sample(QUESTIONS['diepgaand'], min(int(s['deep']), len(QUESTIONS['diepgaand'])))]
-        random.shuffle(others)
-        queue += others
-        queue += [('boomit', None) for _ in range(int(s['boom']))]
-        game['queue'] = queue
+        game['queue'] = build_question_queue(game['settings'])
         socketio.sleep(1)
         send_next_question(room)
 
