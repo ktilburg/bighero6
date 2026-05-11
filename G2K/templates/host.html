@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get2Know - Host</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #2c3e50; color: white; padding-top: 50px; }
+        .card { background: #34495e; padding: 30px; border-radius: 15px; display: inline-block; min-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .slider-box { margin: 15px 0; text-align: left; }
+        .val { float: right; font-weight: bold; color: #f1c40f; }
+        button { background: #27ae60; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
+        .player-tag { background: #e67e22; padding: 5px 15px; border-radius: 20px; margin: 5px; display: inline-block; }
+        #qr-code {
+            display: inline-block;
+            padding: 8px;
+            background: white;
+            border: 4px solid white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="setup-area">
+            <h1>Game Setup</h1>
+            <div class="slider-box">Ice Breakers <span class="val" id="v-ice">3</span><br><input type="range" id="ice" min="0" max="10" value="3" oninput="updateVal('ice')"></div>
+            <div class="slider-box">Minigames <span class="val" id="v-mini">2</span><br><input type="range" id="mini" min="0" max="10" value="2" oninput="updateVal('mini')"></div>
+            <div class="slider-box">Diepgang <span class="val" id="v-deep">3</span><br><input type="range" id="deep" min="0" max="10" value="3" oninput="updateVal('deep')"></div>
+            <div class="slider-box">BoomIt <span class="val" id="v-boom">2</span><br><input type="range" id="boom" min="0" max="10" value="2" oninput="updateVal('boom')"></div>
+            
+            <hr>
+            <div style="text-align: left;">
+                <label><input type="checkbox" id="custom_names" checked> Eigen namen toestaan</label><br><br>
+                <label>Modus: 
+                    <select id="mode" style="padding: 5px;">
+                        <option value="digitaal">Digitaal (Antwoorden via device)</option>
+                        <option value="mondeling" selected>Mondeling (Fysiek bespreken)</option>
+                    </select>
+                </label>
+            </div>
+            <button onclick="createGame()">Maak Lobby</button>
+        </div>
+
+        <div id="lobby-area" style="display:none;">
+            <h1>Code: <span id="display-code" style="color: #f1c40f;"></span></h1>
+            
+            <div style="margin: 20px 0;">
+                <div id="qr-code" aria-label="Scan to Join"></div>
+            </div>
+
+            <div id="player-list"></div>
+            <br>
+            <button onclick="startGame()">START HET SPEL</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let currentRoom = "";
+
+        function updateVal(id) { document.getElementById('v-'+id).innerText = document.getElementById(id).value; }
+
+        function createGame() {
+            const settings = {
+                ice: document.getElementById('ice').value,
+                mini: document.getElementById('mini').value,
+                deep: document.getElementById('deep').value,
+                boom: document.getElementById('boom').value,
+                custom_names: document.getElementById('custom_names').checked,
+                mode: document.getElementById('mode').value
+            };
+            socket.emit('create_game', {settings: settings});
+        }
+
+        socket.on('game_created', (data) => {
+            currentRoom = data.room;
+            document.getElementById('display-code').innerText = currentRoom;
+            document.getElementById('setup-area').style.display = 'none';
+            document.getElementById('lobby-area').style.display = 'block';
+            document.getElementById('qr-code').innerHTML = '';
+            new QRCode(document.getElementById('qr-code'), {
+                text: `${window.location.origin}/`,
+                width: 150,
+                height: 150,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        });
+
+        socket.on('player_joined', (players) => {
+            const list = document.getElementById('player-list');
+            list.innerHTML = "";
+            players.forEach(p => {
+                if(p.name !== "HOST") {
+                    list.innerHTML += `<span class="player-tag">${p.emoji} ${p.name}</span>`;
+                }
+            });
+        });
+
+        function startGame() {
+            socket.emit('start_game', {room: currentRoom});
+            window.location.href = `/game?code=${currentRoom}&name=HOST`;
+        }
+    </script>
+</body>
+</html>
