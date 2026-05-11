@@ -1,10 +1,49 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, emit
+from collections import defaultdict
+import csv
+import os
 import random
+from threading import Lock
 
 app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'deepconnect-secure-key'
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FEEDBACK_FILE = os.path.join(BASE_DIR, 'feedback.xls')
+feedback_lock = Lock()
+feedback_scores = defaultdict(lambda: {'upvotes': 0, 'downvotes': 0})
+
+
+def load_feedback_scores():
+    if not os.path.exists(FEEDBACK_FILE):
+        return
+    with open(FEEDBACK_FILE, 'r', encoding='utf-8', newline='') as feedback_handle:
+        reader = csv.DictReader(feedback_handle, delimiter='\t')
+        for row in reader:
+            question = row.get('question', '').strip()
+            if not question:
+                continue
+            feedback_scores[question] = {
+                'upvotes': int(row.get('upvotes', 0) or 0),
+                'downvotes': int(row.get('downvotes', 0) or 0),
+            }
+
+
+def save_feedback_scores():
+    with open(FEEDBACK_FILE, 'w', encoding='utf-8', newline='') as feedback_handle:
+        writer = csv.DictWriter(feedback_handle, fieldnames=['question', 'upvotes', 'downvotes'], delimiter='\t')
+        writer.writeheader()
+        for question, counts in sorted(feedback_scores.items()):
+            writer.writerow({
+                'question': question,
+                'upvotes': counts['upvotes'],
+                'downvotes': counts['downvotes'],
+            })
+
+
+load_feedback_scores()
 
 OBJECT_NAMES = ["Banaan", "Koekenpan", "Stofzuiger", "Gitaar", "Cactus", "Laptop", "Ananas", "Vliegtuig", "Watermeloen", "Tandenborstel", "Wasmachine", "Robot"]
 QUESTIONS = {
@@ -48,6 +87,30 @@ def host_page(): return render_template('host.html')
 
 @app.route('/game')
 def game_page(): return render_template('game.html')
+
+
+@socketio.on('submit_feedback')
+def on_feedback(data):
+    question = (data.get('question') or '').strip()
+    vote = data.get('vote')
+    if not question or vote not in ('up', 'down'):
+        emit('feedback_saved', {'ok': False}, to=request.sid)
+        return
+
+    with feedback_lock:
+        counts = feedback_scores[question]
+        if vote == 'up':
+            counts['upvotes'] += 1
+        else:
+            counts['downvotes'] += 1
+        save_feedback_scores()
+
+    emit('feedback_saved', {
+        'ok': True,
+        'question': question,
+        'upvotes': feedback_scores[question]['upvotes'],
+        'downvotes': feedback_scores[question]['downvotes'],
+    }, to=request.sid)
 
 @socketio.on('validate_code')
 def on_validate(data):
