@@ -7,98 +7,189 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         body { 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             text-align: center; 
-            background: #f0f2f5; 
+            /* Volledig vullende achtergrond */
+            background-image: url('/static/images/join_background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             margin: 0; 
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
+
         .card { 
             background: white; 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            width: 320px; 
+            padding: 50px 40px; 
+            border-radius: 40px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            width: 90%;
+            max-width: 600px; 
+            border: 2px solid #000; /* Subtiele zwarte rand zoals in screenshot */
+            position: relative;
         }
-        h1 { color: #333; margin-bottom: 20px; }
-        input { width: 85%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
-        input:focus { border-color: #007bff; }
-        button { width: 93%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
-        button:hover { background: #0056b3; }
-        
+
+        .logo {
+            width: 80%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        h2 { 
+            color: #000; 
+            margin-bottom: 20px; 
+            font-weight: 800;
+            font-size: 24px;
+        }
+
+        input { 
+            width: 80%; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border: 2px solid #eee; 
+            border-radius: 15px; 
+            font-size: 18px; 
+            outline: none; 
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        input:focus { 
+            border-color: #ffd700; 
+        }
+
+        /* De gele knop stijl uit het screenshot */
+        .primary-btn { 
+            width: auto; 
+            padding: 15px 40px; 
+            background: #f8e367; /* Geel zoals in screenshot */
+            color: black; 
+            border: 2px solid #000; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-weight: 900; 
+            font-size: 18px; 
+            box-shadow: 4px 4px 0px #000; /* Harde schaduw effect */
+            transition: all 0.1s;
+            margin-top: 15px;
+        }
+
+        .primary-btn:active { 
+            transform: translate(2px, 2px); 
+            box-shadow: 2px 2px 0px #000; 
+        }
+
         /* De Host-knop rechtsonder */
         .host-access {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.05);
-            color: #888;
-            padding: 8px 15px;
-            border-radius: 20px;
+            bottom: 30px;
+            right: 30px;
+            background: #f8e367;
+            color: black;
+            padding: 12px 25px;
+            border-radius: 15px;
             text-decoration: none;
-            font-size: 12px;
-            transition: all 0.3s;
-            border: 1px solid transparent;
+            font-weight: 900;
+            font-size: 16px;
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0px #000;
+            transition: all 0.1s;
         }
+
         .host-access:hover {
-            background: white;
-            color: #333;
-            border-color: #ddd;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #fff;
+        }
+
+        .host-access:active {
+            transform: translate(2px, 2px); 
+            box-shadow: 2px 2px 0px #000; 
+        }
+
+        #error-msg {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 10px;
+            min-height: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1>Get2Know</h1>
+        <!-- Logo bovenin de kaart -->
+        <img src="/static/images/get2know_logo.png" alt="Get2Know Logo" class="logo">
 
+        <!-- Stap 1: Code invoeren -->
         <div id="step-1">
-            <p>Voer de game code in:</p>
-            <input type="number" id="game-code" placeholder="Code">
-            <button onclick="checkCode()">Verder</button>
-            <p id="error-msg" style="color: red; font-size: 0.8em; margin-top: 10px;"></p>
+            <h2>Voer de game code in:</h2>
+            <input type="number" id="game-code" placeholder="Code" oninput="this.value=this.value.slice(0,4)">
+            <br>
+            <button class="primary-btn" onclick="checkCode()">Verder</button>
+            <p id="error-msg"></p>
         </div>
 
+        <!-- Stap 2: Naam invoeren -->
         <div id="step-2" style="display:none;">
-            <p>Hoe heet je?</p>
-            <input type="text" id="player-name" placeholder="Je naam">
-            <button onclick="joinWithValues()">Starten</button>
+            <h2>Hoe heet je?</h2>
+            <input type="text" id="player-name" placeholder="Je naam" maxlength="15">
+            <br>
+            <button class="primary-btn" onclick="joinWithValues()">Start het spel</button>
         </div>
     </div>
 
-    <a href="/host" class="host-access">Host Menu</a>
+    <!-- Host knop rechtsonder -->
+    <a href="/host" class="host-access">Host menu</a>
 
     <script>
         const socket = io();
         let validRoom = "";
 
+        // Luister naar Enter toets in de inputs
+        document.getElementById('game-code').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkCode();
+        });
+        document.getElementById('player-name').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') joinWithValues();
+        });
+
         function checkCode() {
             const code = document.getElementById('game-code').value;
-            if(code) socket.emit('validate_code', {room: code});
+            if(code) {
+                socket.emit('validate_code', {room: code});
+            } else {
+                document.getElementById('error-msg').innerText = "Vul eerst een code in.";
+            }
         }
 
         socket.on('code_valid', (data) => {
             if(data.valid) {
                 validRoom = data.room;
                 if(data.custom_names === false) {
-                    window.location.href = `/game?code=${validRoom}&name=ANONIEM`;
+                    // Als de host "geen namen" heeft ingesteld, direct doorsturen
+                    window.location.href = `/game?code=${validRoom}&name=Speler`;
                 } else {
                     document.getElementById('step-1').style.display = 'none';
                     document.getElementById('step-2').style.display = 'block';
+                    document.getElementById('player-name').focus();
                 }
             } else {
                 document.getElementById('error-msg').innerText = "Code niet gevonden.";
+                document.getElementById('game-code').value = "";
             }
         });
 
         function joinWithValues() {
-            const name = document.getElementById('player-name').value;
-            if(name) window.location.href = `/game?code=${validRoom}&name=${encodeURIComponent(name)}`;
+            const name = document.getElementById('player-name').value.trim();
+            if(name) {
+                window.location.href = `/game?code=${validRoom}&name=${encodeURIComponent(name)}`;
+            } else {
+                alert("Vul aub een naam in.");
+            }
         }
     </script>
 </body>
