@@ -10,37 +10,38 @@ app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'deepconnect-secure-key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FEEDBACK_FILE = os.path.join(BASE_DIR, 'feedback.xls')
-feedback_lock = Lock()
-feedback_scores = defaultdict(lambda: {'upvotes': 0, 'downvotes': 0})
-# Feedback systeem 
+# alleen voor testen en feedback 
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# FEEDBACK_FILE = os.path.join(BASE_DIR, 'feedback.xls')
+# feedback_lock = Lock()
+# feedback_scores = defaultdict(lambda: {'upvotes': 0, 'downvotes': 0})
+# # Feedback systeem 
 
-def load_feedback_scores():
-    if not os.path.exists(FEEDBACK_FILE):
-        return
-    with open(FEEDBACK_FILE, 'r', encoding='utf-8', newline='') as feedback_handle:
-        reader = csv.DictReader(feedback_handle, delimiter='\t')
-        for row in reader:
-            question = row.get('question', '').strip()
-            if not question:
-                continue
-            feedback_scores[question] = {
-                'upvotes': int(row.get('upvotes', 0) or 0),
-                'downvotes': int(row.get('downvotes', 0) or 0),
-            }
+# def load_feedback_scores():
+#     if not os.path.exists(FEEDBACK_FILE):
+#         return
+#     with open(FEEDBACK_FILE, 'r', encoding='utf-8', newline='') as feedback_handle:
+#         reader = csv.DictReader(feedback_handle, delimiter='\t')
+#         for row in reader:
+#             question = row.get('question', '').strip()
+#             if not question:
+#                 continue
+#             feedback_scores[question] = {
+#                 'upvotes': int(row.get('upvotes', 0) or 0),
+#                 'downvotes': int(row.get('downvotes', 0) or 0),
+#             }
 
 
-def save_feedback_scores():
-    with open(FEEDBACK_FILE, 'w', encoding='utf-8', newline='') as feedback_handle:
-        writer = csv.DictWriter(feedback_handle, fieldnames=['question', 'upvotes', 'downvotes'], delimiter='\t')
-        writer.writeheader()
-        for question, counts in sorted(feedback_scores.items()):
-            writer.writerow({
-                'question': question,
-                'upvotes': counts['upvotes'],
-                'downvotes': counts['downvotes'],
-            })
+# def save_feedback_scores():
+#     with open(FEEDBACK_FILE, 'w', encoding='utf-8', newline='') as feedback_handle:
+#         writer = csv.DictWriter(feedback_handle, fieldnames=['question', 'upvotes', 'downvotes'], delimiter='\t')
+#         writer.writeheader()
+#         for question, counts in sorted(feedback_scores.items()):
+#             writer.writerow({
+#                 'question': question,
+#                 'upvotes': counts['upvotes'],
+#                 'downvotes': counts['downvotes'],
+#             })
 
 
 load_feedback_scores()
