@@ -10,40 +10,41 @@ app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'deepconnect-secure-key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FEEDBACK_FILE = os.path.join(BASE_DIR, 'feedback.xls')
-feedback_lock = Lock()
-feedback_scores = defaultdict(lambda: {'upvotes': 0, 'downvotes': 0})
-# Feedback systeem 
+# alleen voor testen en feedback 
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# FEEDBACK_FILE = os.path.join(BASE_DIR, 'feedback.xls')
+# feedback_lock = Lock()
+# feedback_scores = defaultdict(lambda: {'upvotes': 0, 'downvotes': 0})
+# # Feedback systeem 
 
-def load_feedback_scores():
-    if not os.path.exists(FEEDBACK_FILE):
-        return
-    with open(FEEDBACK_FILE, 'r', encoding='utf-8', newline='') as feedback_handle:
-        reader = csv.DictReader(feedback_handle, delimiter='\t')
-        for row in reader:
-            question = row.get('question', '').strip()
-            if not question:
-                continue
-            feedback_scores[question] = {
-                'upvotes': int(row.get('upvotes', 0) or 0),
-                'downvotes': int(row.get('downvotes', 0) or 0),
-            }
-
-
-def save_feedback_scores():
-    with open(FEEDBACK_FILE, 'w', encoding='utf-8', newline='') as feedback_handle:
-        writer = csv.DictWriter(feedback_handle, fieldnames=['question', 'upvotes', 'downvotes'], delimiter='\t')
-        writer.writeheader()
-        for question, counts in sorted(feedback_scores.items()):
-            writer.writerow({
-                'question': question,
-                'upvotes': counts['upvotes'],
-                'downvotes': counts['downvotes'],
-            })
+# def load_feedback_scores():
+#     if not os.path.exists(FEEDBACK_FILE):
+#         return
+#     with open(FEEDBACK_FILE, 'r', encoding='utf-8', newline='') as feedback_handle:
+#         reader = csv.DictReader(feedback_handle, delimiter='\t')
+#         for row in reader:
+#             question = row.get('question', '').strip()
+#             if not question:
+#                 continue
+#             feedback_scores[question] = {
+#                 'upvotes': int(row.get('upvotes', 0) or 0),
+#                 'downvotes': int(row.get('downvotes', 0) or 0),
+#             }
 
 
-load_feedback_scores()
+# def save_feedback_scores():
+#     with open(FEEDBACK_FILE, 'w', encoding='utf-8', newline='') as feedback_handle:
+#         writer = csv.DictWriter(feedback_handle, fieldnames=['question', 'upvotes', 'downvotes'], delimiter='\t')
+#         writer.writeheader()
+#         for question, counts in sorted(feedback_scores.items()):
+#             writer.writerow({
+#                 'question': question,
+#                 'upvotes': counts['upvotes'],
+#                 'downvotes': counts['downvotes'],
+#             })
+
+
+# load_feedback_scores()
 
 OBJECT_NAMES = ["Banaan", "Koekenpan", "Stofzuiger", "Gitaar", "Cactus", "Laptop", "Ananas", "Vliegtuig", "Watermeloen", "Tandenborstel", "Wasmachine", "Robot"]
 QUESTIONS = {
@@ -62,7 +63,7 @@ QUESTIONS = {
     "minigames": [
         # {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
         # {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"},
-        {"q": "Galgje", "type": "action"},
+        {"q": "Galgje","d":"Galgje is een spel waarbij je een woord moet raden door steeds een letter te kiezen. Je mag maar een beperkt aantal letters fout kiezen.","type": "action"},
         {"q": "Wordchain", "type": "action"},
         {"q": "Thirthy seconds", "type": "action."},
         # {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
@@ -77,10 +78,6 @@ QUESTIONS = {
         # {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"},
         {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua persoonlijkheid of juist totaal anders is?", "type": "open"}
     ],
-    "boomit_templates": [
-        "Wie gaf het meest verrassende antwoord op: '{prev_q}'?",
-        "Wie was volgens de groep de winnaar van de minigame: '{prev_game}'?"
-    ]
 }
 
 games = {}
@@ -134,7 +131,6 @@ def build_question_queue(settings):
             last_category = next_category
             streak = 1
 
-    queue += [('boomit', None) for _ in range(int(settings['boom']))]
     return queue
 
 @app.route('/')
@@ -147,36 +143,36 @@ def host_page(): return render_template('host.html')
 def game_page(): return render_template('game.html')
 
 
-@socketio.on('submit_feedback')
-def on_feedback(data):
-    question = (data.get('question') or '').strip()
-    vote = data.get('vote')
-    if not question or vote not in ('up', 'down'):
-        emit('feedback_saved', {'ok': False}, to=request.sid)
-        return
+# @socketio.on('submit_feedback')
+# def on_feedback(data):
+#     question = (data.get('question') or '').strip()
+#     vote = data.get('vote')
+#     if not question or vote not in ('up', 'down'):
+#         emit('feedback_saved', {'ok': False}, to=request.sid)
+#         return
 
-    with feedback_lock:
-        counts = feedback_scores[question]
-        if vote == 'up':
-            counts['upvotes'] += 1
-        else:
-            counts['downvotes'] += 1
-        save_feedback_scores()
+#     with feedback_lock:
+#         counts = feedback_scores[question]
+#         if vote == 'up':
+#             counts['upvotes'] += 1
+#         else:
+#             counts['downvotes'] += 1
+#         save_feedback_scores()
 
-    emit('feedback_saved', {
-        'ok': True,
-        'question': question,
-        'upvotes': feedback_scores[question]['upvotes'],
-        'downvotes': feedback_scores[question]['downvotes'],
-    }, to=request.sid)
+#     emit('feedback_saved', {
+#         'ok': True,
+#         'question': question,
+#         'upvotes': feedback_scores[question]['upvotes'],
+#         'downvotes': feedback_scores[question]['downvotes'],
+#     }, to=request.sid)
 
 @socketio.on('validate_code')
 def on_validate(data):
     room = data.get('room')
     if room in games:
-        emit('code_valid', {'valid': True, 'room': room, 'custom_names': games[room]['settings'].get('custom_names', True)}, to=request.sid)
+        emit('code_valid', {'valid': True, 'room': room, 'custom_names': games[room]['settings'].get('custom_names', True)}, to=request.sid) # type: ignore
     else:
-        emit('code_valid', {'valid': False}, to=request.sid)
+        emit('code_valid', {'valid': False}, to=request.sid) # type: ignore
 
 @socketio.on('create_game')
 def on_create(data):
@@ -185,7 +181,7 @@ def on_create(data):
         'players': [], 'history': [], 'settings': data.get('settings'), 'queue': [], 'current_answers': [], 'answered_count': 0
     }
     join_room(room)
-    emit('game_created', {'room': room}, to=request.sid)
+    emit('game_created', {'room': room}, to=request.sid) # type: ignore
 
 @socketio.on('join_game')
 def on_join(data):
@@ -198,7 +194,7 @@ def on_join(data):
         player = {"name": name, "emoji": random.choice(["🦁","🚀","🥑","👾","🎸","🍕"])}
         games[room]['players'].append(player)
         emit('player_joined', games[room]['players'], to=room)
-        emit('name_assigned', {'name': name}, to=request.sid)
+        emit('name_assigned', {'name': name}, to=request.sid) # type: ignore
 
 @socketio.on('start_game')
 def on_start(data):
@@ -235,14 +231,9 @@ def send_next_question(room):
         return
     game['answered_count'] = 0
     cat, q_obj = game['queue'].pop(0)
-    if cat == 'boomit':
-        prev = random.choice(game['history']) if game['history'] else "deze sessie"
-        q_text = random.choice(QUESTIONS['boomit_templates']).replace('{prev_q}', prev).replace('{prev_game}', prev)
-        q_type = 'boomit'
-    else:
-        q_text = q_obj['q']
-        q_type = q_obj.get('type', 'open')
-        game['history'].append(q_text)
+    q_text = q_obj['q']
+    q_type = q_obj.get('type', 'open')
+    game['history'].append(q_text)
     emit('next_round', {
         'category': cat, 'question': q_text, 'type': q_type, 
         'mode': game['settings']['mode'], 'total_players': len(game['players']) - 1
