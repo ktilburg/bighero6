@@ -110,7 +110,7 @@ except Exception:
 # Load galgje words 
 HANGMAN_WORDS = []
 try:
-    _path = os.path.join(os.path.dirname(__file__), 'hangman.json')
+    _path = os.path.join(os.path.dirname(__file__), 'galgje.json')
     if os.path.exists(_path):
         with open(_path, 'r', encoding='utf-8') as _f:
             _data = json.load(_f)
@@ -284,6 +284,41 @@ def on_hangman_guess(data):
         hangman['wrong_letters'].append(letter)
         hangman['lives'] -= 1
 
+    solved = _hangman_is_solved(secret_word, hangman['guessed_letters'])
+    hangman['solved'] = solved
+    hangman['finished'] = solved or hangman['lives'] <= 0
+
+    emit('hangman_state', _build_hangman_state(hangman), to=room)
+    if hangman['finished']:
+        emit('hangman_complete', {
+            'solved': solved,
+            'word': hangman['word'],
+            'lives': hangman['lives']
+        }, to=room)
+
+@socketio.on('hangman_hint')
+def on_hangman_hint(data):
+    room = data.get('room')
+    if room not in games:
+        return
+
+    game = games[room]
+    hangman = game.get('hangman')
+    if not hangman or hangman.get('finished'):
+        return
+
+    # Lose one life for using hint
+    hangman['lives'] -= 1
+    
+    # Find an unguessed letter and reveal it
+    secret_word = hangman['word'].lower()
+    unguessed = [char for char in secret_word if char.isalpha() and char not in hangman['guessed_letters']]
+    
+    if unguessed:
+        revealed_letter = random.choice(unguessed)
+        hangman['guessed_letters'].append(revealed_letter)
+    
+    # Check if solved
     solved = _hangman_is_solved(secret_word, hangman['guessed_letters'])
     hangman['solved'] = solved
     hangman['finished'] = solved or hangman['lives'] <= 0
