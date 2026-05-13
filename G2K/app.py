@@ -122,6 +122,11 @@ def build_question_queue(settings):
         QUESTIONS['ice_breakers'],
         min(int(settings['ice']), len(QUESTIONS['ice_breakers']))
     )]
+    
+    would_you_rather = [('would_you_rather', q) for q in random.sample(
+        QUESTIONS['would_you_rather'],
+        min(int(settings['wy']), len(QUESTIONS['would_you_rather']))
+    )]
 
     minigames = [('minigames', q) for q in random.sample(
         QUESTIONS['minigames'],
@@ -141,11 +146,12 @@ def build_question_queue(settings):
     active_pools = {
         'minigames': minigames,
         'get2know': get2know,
+        'would_you_rather': would_you_rather,
     }
     last_category = queue[-1][0] if queue else None
     streak = 1 if last_category in active_pools else 0
 
-    while active_pools['minigames'] or active_pools['get2know']:
+    while active_pools['minigames'] or active_pools['get2know'] or active_pools['would_you_rather']:
         available_categories = [
             category for category, pool in active_pools.items() if pool
         ]
