@@ -159,6 +159,7 @@
                 <div id="hangman-controls">
                     <input type="text" id="hangman-input" maxlength="1" style="width:60px; text-align:center; padding:15px; border:3px solid #000; font-size: 24px;">
                     <button class="ans-btn" onclick="sendHangmanLetter()">Gok</button>
+                    <button class="ans-btn" style="background:#3498db;" onclick="sendHangmanHint()">💡 Hint</button>
                 </div>
             </div>
 
@@ -358,6 +359,9 @@
             const l = document.getElementById('hangman-input').value;
             socket.emit('hangman_guess', {room: room, letter: l});
             document.getElementById('hangman-input').value = "";
+        }
+        function sendHangmanHint() {
+            socket.emit('hangman_hint', {room: room});
         }
         socket.on('hangman_state', (p) => updateHangman(p));
 
