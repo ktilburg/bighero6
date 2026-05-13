@@ -330,7 +330,11 @@
 
         function startThirtySeconds(p) {
             const container = document.getElementById('thirty-words');
-            container.innerHTML = p.woorden.map(w => `<span style="background:#eee; padding:10px 15px; border-radius:15px; border:2px solid #000;">${w}</span>`).join(' ');
+            if (myName === "HOST") {
+                container.innerHTML = '<span style="color: #999; font-style: italic;">Woorden zichtbaar voor spelers...</span>';
+            } else {
+                container.innerHTML = p.woorden.map(w => `<span style="background:#eee; padding:10px 15px; border-radius:15px; border:2px solid #000;">${w}</span>`).join(' ');
+            }
             let time = 30;
             thirtyInterval = setInterval(() => {
                 time--;
