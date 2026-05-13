@@ -80,9 +80,8 @@ QUESTIONS = {
         {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua Intresses of juist totaal anders is?", "type": "open"}
     ],
     "would_you_rather": [
-        {"q": "Zou je liever supersterk zijn of supersnel?", "type": "open"},
-        {"q": "Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "open"},
-        {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "open"},
+        {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
+        {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, or elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
     ],
 }
 
@@ -310,19 +309,18 @@ def handle_next(data):
 def send_next_question(room):
     game = games[room]
     if not game['queue']:
-        # Expliciete categorie 'end' meesturen
         emit('game_over', {"message": "Bedankt voor het spelen!", "category": "end"}, to=room)
         return
+    
     game['answered_count'] = 0
     cat, q_obj = game['queue'].pop(0)
     q_text = q_obj['q']
     q_type = q_obj.get('type', 'open')
     payload = None
 
+    # Specifieke minigame logica
     if q_text == 'Wordchain':
-        theme = random.choice(WORDCHAIN_THEMES) if WORDCHAIN_THEMES else random.choice([
-            'Dieren', 'Eten en drinken', 'Sport', 'School', 'Vakantie'
-        ])
+        theme = random.choice(WORDCHAIN_THEMES) if WORDCHAIN_THEMES else 'Dieren'
         q_text = theme
         q_type = 'wordchain'
         payload = {'theme': theme}
@@ -330,42 +328,39 @@ def send_next_question(room):
     if q_text == 'Galgje':
         word_pool = list(HANGMAN_WORDS)
         word_pool.extend(game['settings'].get('hangman_words') or [])
-        word_pool = [word.strip() for word in word_pool if isinstance(word, str) and word.strip()]
-        secret_word = random.choice(word_pool) if word_pool else random.choice([
-            'fiets', 'computer', 'vakantie', 'school', 'regenboog'
-        ])
+        word_pool = [w.strip() for w in word_pool if isinstance(w, str) and w.strip()]
+        secret_word = random.choice(word_pool) if word_pool else 'regenboog'
         game['hangman'] = {
-            'word': secret_word,
-            'guessed_letters': [],
-            'wrong_letters': [],
-            'lives': 10,
-            'finished': False,
-            'solved': False,
+            'word': secret_word, 'guessed_letters': [], 'wrong_letters': [],
+            'lives': 10, 'finished': False, 'solved': False,
         }
         q_type = 'hangman'
         payload = _build_hangman_state(game['hangman'])
 
-    # Detect the thirty-seconds minigame (accept common misspellings)
     if 'thirt' in q_text.lower():
-        # choose a random list if available
-        chosen = None
-        if THIRTY_SECONDS_LISTS:
-            chosen = random.choice(THIRTY_SECONDS_LISTS)
-        else:
-            # fallback example
-            chosen = {'naam': 'Default', 'woorden': ['appel','stoel','auto','boom','boek','pen','muis']}
+        chosen = random.choice(THIRTY_SECONDS_LISTS) if THIRTY_SECONDS_LISTS else {'woorden': ['appel','auto','boom']}
         payload = {'naam': chosen.get('naam', ''), 'woorden': chosen.get('woorden', []), 'timer': 30}
         q_type = 'thirty_seconds'
 
     game['history'].append(q_text)
+    
+    # Payload samenstellen voor de frontend
     emit_payload = {
-        'category': cat, 'question': q_text, 'type': q_type,
-        'mode': game['settings']['mode'], 'total_players': len(game['players']) - 1
+        'category': cat, 
+        'question': q_text, 
+        'type': q_type,
+        'mode': game['settings']['mode'], 
+        'total_players': len(game['players']) - 1
     }
+    
+    # Belangrijk: stuur de opties mee voor Would You Rather!
+    if 'options' in q_obj:
+        emit_payload['options'] = q_obj['options']
+        
     if payload is not None:
         emit_payload['payload'] = payload
+        
     emit('next_round', emit_payload, to=room)
-
 
 def _hangman_is_solved(secret_word, guessed_letters):
     guessed = set(guessed_letters)
