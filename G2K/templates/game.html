@@ -109,6 +109,8 @@
         }
 
         #results-area { background: #fff; padding: 30px; border-radius: 25px; border: 3px solid #000; margin-top: 30px; display: none; text-align: left; width: 100%; box-sizing: border-box; font-size: 20px; }
+        
+        #wordchain-theme { font-size: 48px; font-weight: 900; color: #8e44ad; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body id="game-body">
@@ -137,7 +139,11 @@
                 <button class="ans-btn" onclick="sendAnswer()">Verstuur</button>
             </div>
 
-            <!-- Minigame containers worden nu expliciet gereset -->
+            <div id="wordchain-wrap" style="display:none; margin-top: 20px;">
+                <p>Thema:</p>
+                <div id="wordchain-theme"></div>
+            </div>
+
             <div id="hangman-wrap" style="display:none; margin-top: 25px;">
                 <div id="hangman-word" style="font-size:45px; letter-spacing:8px; font-weight:bold;"></div>
                 <div id="hangman-meta" style="margin: 20px 0; font-size: 20px;"></div>
@@ -179,26 +185,25 @@
 
         if(myName === "HOST") document.body.classList.add('is-host');
 
-        // Verbeterde reset functie
         function resetUI() {
             document.getElementById('answer-section').style.display = "none";
             document.getElementById('wyr-options-container').style.display = "none";
             document.getElementById('hangman-wrap').style.display = "none";
             document.getElementById('thirty-wrap').style.display = "none";
+            document.getElementById('wordchain-wrap').style.display = "none";
             document.getElementById('results-area').style.display = "none";
             document.getElementById('feedback-wrap').style.display = "none";
             document.getElementById('status-bar').innerText = "";
-            
-            // Ook de inhoud even leegmaken om flikkeringen van oude woorden te voorkomen
             document.getElementById('hangman-word').innerText = "";
             document.getElementById('thirty-words').innerHTML = "";
+            document.getElementById('wordchain-theme').innerText = "";
         }
 
         socket.emit('join_game', {room: room, name: myName});
 
         socket.on('next_round', (data) => {
             clearInterval(thirtyInterval);
-            resetUI(); // Hier worden alle containers verborgen
+            resetUI();
 
             if (data.category === 'ice_breakers' && !introShown) {
                 showIntroAnimation();
@@ -209,9 +214,9 @@
             document.body.classList.add('theme-' + data.category);
 
             document.getElementById('question-text').innerText = data.question;
-            updateVisuals(data.category);
+            
+            updateVisuals(data.category, data.type);
 
-            // Specifieke logica per type zet de juiste container weer op "block"
             if (data.category === 'would_you_rather' && data.options) {
                 document.getElementById('wyr-options-container').style.display = "grid";
                 document.getElementById('wyr-0').innerText = data.options[0];
@@ -224,6 +229,11 @@
             else if (data.type === 'thirty_seconds') {
                 document.getElementById('thirty-wrap').style.display = "block";
                 startThirtySeconds(data.payload);
+            }
+            else if (data.type === 'wordchain') {
+                document.getElementById('question-text').innerText = "Wordchain!";
+                document.getElementById('wordchain-wrap').style.display = "block";
+                document.getElementById('wordchain-theme').innerText = data.payload.theme;
             }
             else if (data.mode === 'digitaal' && myName !== "HOST") {
                 document.getElementById('answer-section').style.display = "block";
@@ -244,7 +254,7 @@
             }, 1500);
         }
 
-        function updateVisuals(cat) {
+        function updateVisuals(cat, type) {
             const logo = document.getElementById('theme-logo');
             const sTL = document.getElementById('star-tl');
             const sBR = document.getElementById('star-br');
@@ -256,7 +266,13 @@
             sBR.style.display = "block";
             body.style.backgroundColor = "var(--bg-color)";
 
-            if(cat === 'ice_breakers') {
+            if(type === 'hangman' || type === 'thirty_seconds' || type === 'wordchain') {
+                logo.src = "/static/images/mini_games_header.png";
+                sTL.src = "/static/images/star_green.png";
+                sBR.src = "/static/images/star_purple.png";
+                bgLines.style.backgroundImage = "url('/static/images/background_rounded_line_purple.png')";
+            } 
+            else if(cat === 'ice_breakers') {
                 logo.src = "/static/images/icebreaker_label.png";
                 sTL.src = "/static/images/star_blue.png";
                 sBR.src = "/static/images/star_pink.png";
@@ -330,11 +346,7 @@
 
         function startThirtySeconds(p) {
             const container = document.getElementById('thirty-words');
-            if (myName === "HOST") {
-                container.innerHTML = '<span style="color: #999; font-style: italic;">Woorden zichtbaar voor spelers...</span>';
-            } else {
-                container.innerHTML = p.woorden.map(w => `<span style="background:#eee; padding:10px 15px; border-radius:15px; border:2px solid #000;">${w}</span>`).join(' ');
-            }
+            container.innerHTML = p.woorden.map(w => `<span style="background:#eee; padding:10px 15px; border-radius:15px; border:2px solid #000;">${w}</span>`).join(' ');
             let time = 30;
             thirtyInterval = setInterval(() => {
                 time--;
