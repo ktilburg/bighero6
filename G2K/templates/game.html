@@ -150,6 +150,7 @@
             <div id="thirty-wrap" style="display:none; margin-top: 25px;">
                 <div id="thirty-words" style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; font-size: 22px;"></div>
                 <h2 id="thirty-timer" style="color: red; margin-top: 30px; font-size: 40px;">30s</h2>
+                <button id="thirty-start-btn" class="ans-btn" style="display:none; margin-top: 10px;" onclick="requestThirtySecondsStart()">Start</button>
             </div>
 
             <div id="status-bar" style="margin-top: 20px; font-weight: bold; color: #555; font-size: 18px;"></div>
@@ -175,6 +176,7 @@
         const room = urlParams.get('code');
         let myName = urlParams.get('name');
         let thirtyInterval;
+        let thirtyRoundActive = false;
         let introShown = false;
 
         if(myName === "HOST") document.body.classList.add('is-host');
@@ -198,6 +200,7 @@
 
         socket.on('next_round', (data) => {
             clearInterval(thirtyInterval);
+            thirtyRoundActive = false;
             resetUI(); // Hier worden alle containers verborgen
 
             if (data.category === 'ice_breakers' && !introShown) {
@@ -223,7 +226,7 @@
             }
             else if (data.type === 'thirty_seconds') {
                 document.getElementById('thirty-wrap').style.display = "block";
-                startThirtySeconds(data.payload);
+                prepareThirtySeconds(data.payload);
             }
             else if (data.mode === 'digitaal' && myName !== "HOST") {
                 document.getElementById('answer-section').style.display = "block";
@@ -328,19 +331,45 @@
         }
         socket.on('hangman_state', (p) => updateHangman(p));
 
-        function startThirtySeconds(p) {
+        socket.on('thirty_seconds_started', () => {
+            beginThirtySecondsCountdown();
+        });
+
+        function prepareThirtySeconds(p) {
             const container = document.getElementById('thirty-words');
+            const startBtn = document.getElementById('thirty-start-btn');
+            const timer = document.getElementById('thirty-timer');
+            timer.innerText = (p.timer || 30) + "s";
+            startBtn.style.display = myName === "HOST" ? "inline-block" : "none";
+            startBtn.disabled = false;
+            thirtyRoundActive = false;
+
             if (myName === "HOST") {
                 container.innerHTML = '<span style="color: #999; font-style: italic;">Woorden zichtbaar voor spelers...</span>';
             } else {
                 container.innerHTML = p.woorden.map(w => `<span style="background:#eee; padding:10px 15px; border-radius:15px; border:2px solid #000;">${w}</span>`).join(' ');
             }
+
+        }
+
+        function beginThirtySecondsCountdown() {
+            if (thirtyRoundActive) return;
+            thirtyRoundActive = true;
+            document.getElementById('thirty-start-btn').style.display = "none";
+
             let time = 30;
+            document.getElementById('thirty-timer').innerText = time + "s";
             thirtyInterval = setInterval(() => {
                 time--;
                 document.getElementById('thirty-timer').innerText = time + "s";
                 if(time <= 0) clearInterval(thirtyInterval);
             }, 1000);
+        }
+
+        function requestThirtySecondsStart() {
+            if (myName === "HOST" && !thirtyRoundActive) {
+                socket.emit('start_thirty_seconds', {room: room});
+            }
         }
     </script>
 </body>

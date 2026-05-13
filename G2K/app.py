@@ -341,6 +341,12 @@ def handle_next(data):
         else:
             send_next_question(room)
 
+@socketio.on('start_thirty_seconds')
+def on_start_thirty_seconds(data):
+    room = data.get('room')
+    if room in games:
+        emit('thirty_seconds_started', {'room': room}, to=room)
+
 def send_next_question(room):
     game = games[room]
     if not game['queue']:
@@ -376,6 +382,7 @@ def send_next_question(room):
         chosen = random.choice(THIRTY_SECONDS_LISTS) if THIRTY_SECONDS_LISTS else {'woorden': ['appel','auto','boom']}
         payload = {'naam': chosen.get('naam', ''), 'woorden': chosen.get('woorden', []), 'timer': 30}
         q_type = 'thirty_seconds'
+        game['thirty_seconds_started'] = False
 
     game['history'].append(q_text)
     
