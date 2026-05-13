@@ -27,7 +27,7 @@
             <div class="slider-box">Ice Breakers <span class="val" id="v-ice">3</span><br><input type="range" id="ice" min="0" max="10" value="3" oninput="updateVal('ice')"></div>
             <div class="slider-box">Minigames <span class="val" id="v-mini">2</span><br><input type="range" id="mini" min="0" max="10" value="2" oninput="updateVal('mini')"></div>
             <div class="slider-box">Diepgang <span class="val" id="v-deep">3</span><br><input type="range" id="deep" min="0" max="10" value="3" oninput="updateVal('deep')"></div>
-            
+            <div class="slider-box">Would You Rather <span class="val" id="v-wy">3</span><br><input type="range" id="wy" min="0" max="10" value="3" oninput="updateVal('wy')"></div>
             <hr>
             <div style="text-align: left;">
                 <label><input type="checkbox" id="custom_names" checked> Eigen namen toestaan</label><br><br>
@@ -65,6 +65,7 @@
                 ice: document.getElementById('ice').value,
                 mini: document.getElementById('mini').value,
                 deep: document.getElementById('deep').value,
+                wy: document.getElementById('wy').value,
                 custom_names: document.getElementById('custom_names').checked,
                 mode: document.getElementById('mode').value
             };
