@@ -4,6 +4,7 @@ from collections import defaultdict
 import csv
 import os
 import random
+import json
 from threading import Lock
 
 app = Flask(__name__, static_folder='static')
@@ -53,14 +54,12 @@ QUESTIONS = {
         # {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
         # {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
+        {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "open"},
         # {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
         {"q": "Welke superkracht zou je willen hebben?", "type": "open"},
         # {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
+        # {"q": "Would you rather? Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "action"},
         {"q": "Wat voor serie/film/boek zou je opnieuw willen zien/lezen?", "type": "open"},
-    ],
-    "would_you_rather": [
-        {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
-        {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
     ],
     "minigames": [
         # {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
@@ -72,15 +71,48 @@ QUESTIONS = {
     ],
     "get2know": [
         # {"q": "Waar ben je het meest dankbaar voor van de afgelopen week?", "type": "open"},
-        {"q": "Wat is een eigenschap die je echt in anderen bewonderd?", "type": "open"},
+        {"q": "Wat is een eigenschap die je echt in anderen bewondert?", "type": "open"},
         {"q": "Wat is iets wat je echt wilt doen/leren dit jaar?", "type": "open"},
         # {"q": "Wat is iets aan jou dat mensen niet meteen van je zouden verwachten?", "type": "open"},
         {"q": "Waar ben je trots op?", "type": "open"},
         # {"q": "Wanneer heb je het gevoel dat iemand jou echt begrijpt? ", "type": "open"},
         # {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"},
-        {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua persoonlijkheid of juist totaal anders is?", "type": "open"}
+        {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua Intresses of juist totaal anders is?", "type": "open"}
     ],
 }
+
+# Load thirty-seconds lists 
+THIRTY_SECONDS_LISTS = []
+try:
+    _path = os.path.join(os.path.dirname(__file__), 'thirty_seconds.json')
+    if os.path.exists(_path):
+        with open(_path, 'r', encoding='utf-8') as _f:
+            _data = json.load(_f)
+            THIRTY_SECONDS_LISTS = _data.get('lists', []) or []
+except Exception:
+    THIRTY_SECONDS_LISTS = []
+
+# Load wordchain themes 
+WORDCHAIN_THEMES = []
+try:
+    _path = os.path.join(os.path.dirname(__file__), 'wordchain.json')
+    if os.path.exists(_path):
+        with open(_path, 'r', encoding='utf-8') as _f:
+            _data = json.load(_f)
+            WORDCHAIN_THEMES = _data.get('themes', []) or []
+except Exception:
+    WORDCHAIN_THEMES = []
+
+# Load galgje words 
+HANGMAN_WORDS = []
+try:
+    _path = os.path.join(os.path.dirname(__file__), 'hangman.json')
+    if os.path.exists(_path):
+        with open(_path, 'r', encoding='utf-8') as _f:
+            _data = json.load(_f)
+            HANGMAN_WORDS = _data.get('woorden', []) or []
+except Exception:
+    HANGMAN_WORDS = []
 
 games = {}
 
@@ -179,8 +211,9 @@ def on_validate(data):
 @socketio.on('create_game')
 def on_create(data):
     room = str(random.randint(1000, 9999))
+    settings = data.get('settings') or {}
     games[room] = {
-        'players': [], 'history': [], 'settings': data.get('settings'), 'queue': [], 'current_answers': [], 'answered_count': 0
+        'players': [], 'history': [], 'settings': settings, 'queue': [], 'current_answers': [], 'answered_count': 0, 'hangman': None
     }
     join_room(room)
     emit('game_created', {'room': room}, to=request.sid) # type: ignore
@@ -215,6 +248,44 @@ def on_answer(data):
         games[room]['answered_count'] += 1
         emit('update_status', {'answered': games[room]['answered_count'], 'total': len(games[room]['players']) - 1}, to=room)
 
+
+@socketio.on('hangman_guess')
+def on_hangman_guess(data):
+    room = data.get('room')
+    letter = (data.get('letter') or '').strip().lower()
+    if room not in games or not letter:
+        return
+
+    game = games[room]
+    hangman = game.get('hangman')
+    if not hangman or hangman.get('finished'):
+        return
+
+    if len(letter) != 1 or not letter.isalpha():
+        return
+
+    if letter in hangman['guessed_letters']:
+        emit('hangman_state', _build_hangman_state(hangman), to=room)
+        return
+
+    hangman['guessed_letters'].append(letter)
+    secret_word = hangman['word'].lower()
+    if letter not in secret_word:
+        hangman['wrong_letters'].append(letter)
+        hangman['lives'] -= 1
+
+    solved = _hangman_is_solved(secret_word, hangman['guessed_letters'])
+    hangman['solved'] = solved
+    hangman['finished'] = solved or hangman['lives'] <= 0
+
+    emit('hangman_state', _build_hangman_state(hangman), to=room)
+    if hangman['finished']:
+        emit('hangman_complete', {
+            'solved': solved,
+            'word': hangman['word'],
+            'lives': hangman['lives']
+        }, to=room)
+
 @socketio.on('request_next')
 def handle_next(data):
     room = data.get('room')
@@ -235,11 +306,86 @@ def send_next_question(room):
     cat, q_obj = game['queue'].pop(0)
     q_text = q_obj['q']
     q_type = q_obj.get('type', 'open')
+    payload = None
+
+    if q_text == 'Wordchain':
+        theme = random.choice(WORDCHAIN_THEMES) if WORDCHAIN_THEMES else random.choice([
+            'Dieren', 'Eten en drinken', 'Sport', 'School', 'Vakantie'
+        ])
+        q_text = theme
+        q_type = 'wordchain'
+        payload = {'theme': theme}
+
+    if q_text == 'Galgje':
+        word_pool = list(HANGMAN_WORDS)
+        word_pool.extend(game['settings'].get('hangman_words') or [])
+        word_pool = [word.strip() for word in word_pool if isinstance(word, str) and word.strip()]
+        secret_word = random.choice(word_pool) if word_pool else random.choice([
+            'fiets', 'computer', 'vakantie', 'school', 'regenboog'
+        ])
+        game['hangman'] = {
+            'word': secret_word,
+            'guessed_letters': [],
+            'wrong_letters': [],
+            'lives': 10,
+            'finished': False,
+            'solved': False,
+        }
+        q_type = 'hangman'
+        payload = _build_hangman_state(game['hangman'])
+
+    # Detect the thirty-seconds minigame (accept common misspellings)
+    if 'thirt' in q_text.lower():
+        # choose a random list if available
+        chosen = None
+        if THIRTY_SECONDS_LISTS:
+            chosen = random.choice(THIRTY_SECONDS_LISTS)
+        else:
+            # fallback example
+            chosen = {'naam': 'Default', 'woorden': ['appel','stoel','auto','boom','boek','pen','muis']}
+        payload = {'naam': chosen.get('naam', ''), 'woorden': chosen.get('woorden', []), 'timer': 30}
+        q_type = 'thirty_seconds'
+
     game['history'].append(q_text)
-    emit('next_round', {
-        'category': cat, 'question': q_text, 'type': q_type, 
+    emit_payload = {
+        'category': cat, 'question': q_text, 'type': q_type,
         'mode': game['settings']['mode'], 'total_players': len(game['players']) - 1
-    }, to=room)
+    }
+    if payload is not None:
+        emit_payload['payload'] = payload
+    emit('next_round', emit_payload, to=room)
+
+
+def _hangman_is_solved(secret_word, guessed_letters):
+    guessed = set(guessed_letters)
+    for character in secret_word.lower():
+        if character.isalpha() and character not in guessed:
+            return False
+    return True
+
+
+def _mask_hangman_word(secret_word, guessed_letters):
+    guessed = set(guessed_letters)
+    masked_characters = []
+    for character in secret_word:
+        if not character.isalpha():
+            masked_characters.append(character)
+        elif character.lower() in guessed:
+            masked_characters.append(character)
+        else:
+            masked_characters.append('_')
+    return ' '.join(masked_characters)
+
+
+def _build_hangman_state(hangman):
+    return {
+        'word_mask': _mask_hangman_word(hangman['word'], hangman['guessed_letters']),
+        'lives': hangman['lives'],
+        'guessed_letters': hangman['guessed_letters'],
+        'wrong_letters': hangman['wrong_letters'],
+        'solved': hangman['solved'],
+        'finished': hangman['finished'],
+    }
 
 if __name__ == '__main__':
     socketio.run(app, debug=False, port=5026, host='0.0.0.0', allow_unsafe_werkzeug=True)

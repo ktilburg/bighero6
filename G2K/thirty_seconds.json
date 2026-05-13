@@ -1,0 +1,20 @@
+{
+  "lists": [
+    {
+      "naam": "30 seconds",
+      "woorden": ["Tesla", "Pippi Langkous", "Barak Obama", "Madame Tussauds", "De Nijl"]
+    },
+    {
+      "naam": "30 seconds",
+      "woorden": ["Ed Sheeran", "Nutella", "Dieuwertje Blok", "Professor", "Haribo" ]
+    },
+    {
+      "naam": "30 seconds",
+      "woorden": ["Beugel", "Kabinet", "Ajax", "Liniaal", "Lion King"]
+    },
+    {
+      "naam": "30 seconds",
+      "woorden": ["Stadhuis", "Karten", "Zoutvaatje", "Sjoelen", "Nijntje"]
+    }
+  ]
+}

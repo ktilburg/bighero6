@@ -30,6 +30,11 @@
         #feedback-status { margin-top: 10px; font-weight: bold; display: none; }
         #results-area { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin-top: 20px; text-align: left; }
         #next-btn { background: white; color: #333; font-weight: bold; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        #hangman-wrap { display: none; margin-top: 16px; }
+        #hangman-word { font-size: 28px; letter-spacing: 0.35em; font-weight: bold; margin: 12px 0; word-break: break-word; }
+        #hangman-meta { margin-top: 8px; font-size: 18px; }
+        #hangman-input-wrap { display: none; margin-top: 14px; }
+        #hangman-input { max-width: 140px; text-align: center; text-transform: lowercase; }
     </style>
 </head>
 <body class="waiting">
@@ -50,6 +55,18 @@
 
         <div id="status-bar" style="margin: 15px 0; font-weight: bold; display:none;"></div>
         <div id="results-area" style="display:none;"></div>
+        <div id="hangman-wrap">
+            <div id="hangman-word"></div>
+            <div id="hangman-meta"></div>
+            <div id="hangman-input-wrap">
+                <input type="text" id="hangman-input" maxlength="1" placeholder="a">
+                <button class="ans-btn" onclick="sendHangmanLetter()">Stuur letter</button>
+            </div>
+        </div>
+        <div id="thirty-wrap" style="display:none; margin-top:18px; text-align:center;">
+            <div id="thirty-list" style="margin-bottom:12px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
+            <div id="thirty-timer" style="font-weight:bold; font-size:20px; margin-top:6px;"></div>
+        </div>
 
         <button id="next-btn" style="display:none;" onclick="requestNext()">VOLGENDE</button>
     </div>
@@ -62,6 +79,10 @@
         let currentMode = "mondeling";
         let currentQuestion = "";
         let feedbackSent = false;
+        let thirtyInterval = null;
+        let thirtyRemaining = 0;
+        let thirtyFinished = false;
+        let hangmanFinished = false;
 
         socket.emit('join_game', {room: room, name: myName});
         socket.on('name_assigned', (data) => { if(myName !== "HOST") myName = data.name; });
@@ -70,16 +91,19 @@
             currentMode = data.mode;
             currentQuestion = data.question;
             feedbackSent = false;
+            thirtyFinished = false;
+            hangmanFinished = false;
             document.body.className = data.category;
             document.getElementById('cat-label').innerText = data.category.replace('_',' ').toUpperCase();
             document.getElementById('question-text').innerText = data.question;
             document.getElementById('results-area').style.display = "none";
+            document.getElementById('hangman-wrap').style.display = "none";
             document.getElementById('feedback-status').style.display = "none";
             document.getElementById('feedback-status').innerText = "";
             document.getElementById('feedback-up-btn').disabled = false;
             document.getElementById('feedback-down-btn').disabled = false;
             
-            const isMinigame = (data.type === 'action');
+            const isMinigame = (data.type === 'action' || data.type === 'thirty_seconds' || data.type === 'wordchain' || data.type === 'hangman');
             const isDigitaal = (currentMode === 'digitaal');
             
             if(isDigitaal && !isMinigame) {
@@ -96,10 +120,86 @@
                 document.getElementById('answer-section').style.display = "none";
             }
 
+            if(data.type === 'hangman') {
+                document.getElementById('cat-label').innerText = 'GALGJE';
+                document.getElementById('question-text').innerText = 'Raad het woord';
+                document.getElementById('hangman-wrap').style.display = 'block';
+                document.getElementById('hangman-input-wrap').style.display = (myName === "HOST") ? 'block' : 'none';
+                document.getElementById('answer-section').style.display = 'none';
+                applyHangmanState(data.payload || {});
+            }
+
+            if(data.type === 'wordchain') {
+                const theme = (data.payload && data.payload.theme) ? data.payload.theme : data.question;
+                document.getElementById('cat-label').innerText = 'WORDCHAIN';
+                document.getElementById('question-text').innerText = theme;
+                document.getElementById('answer-section').style.display = 'none';
+            }
+
             document.getElementById('feedback-wrap').style.display = "none";
+
+            // Handle thirty-seconds minigame in digital mode
+            if(data.type === 'thirty_seconds' && isDigitaal) {
+                const words = (data.payload && data.payload.woorden) || [];
+                const listName = (data.payload && data.payload.naam) || '';
+                const timer = (data.payload && data.payload.timer) || 30;
+                const listEl = document.getElementById('thirty-list');
+                document.getElementById('thirty-wrap').style.display = 'block';
+                document.getElementById('answer-section').style.display = 'none';
+                if(myName === "HOST") {
+                    listEl.innerHTML = '';
+                } else {
+                    listEl.innerHTML = (listName ? `<div style="width:100%;font-weight:bold;margin-bottom:6px;">${listName}</div>` : '') + words.map(w => `<span style="padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.08);">${w}</span>`).join('');
+                }
+                thirtyRemaining = timer;
+                document.getElementById('thirty-timer').innerText = `${thirtyRemaining}s`;
+                if(thirtyInterval) clearInterval(thirtyInterval);
+                thirtyInterval = setInterval(() => {
+                    thirtyRemaining -= 1;
+                    document.getElementById('thirty-timer').innerText = `${thirtyRemaining}s`;
+                    if(thirtyRemaining <= 0) {
+                        clearInterval(thirtyInterval); thirtyInterval = null;
+                        thirtyFinished = true;
+                        document.getElementById('thirty-timer').innerText = 'Tijd voorbij';
+                    }
+                }, 1000);
+            } else {
+                document.getElementById('thirty-wrap').style.display = 'none';
+                document.getElementById('cat-label').style.display = 'block';
+                document.getElementById('question-text').style.display = 'block';
+                if(thirtyInterval) { clearInterval(thirtyInterval); thirtyInterval = null; }
+            }
 
             if(myName === "HOST") document.getElementById('next-btn').style.display = "inline-block";
         });
+
+        socket.on('hangman_state', (data) => {
+            applyHangmanState(data);
+        });
+
+        socket.on('hangman_complete', (data) => {
+            hangmanFinished = true;
+            document.getElementById('hangman-input-wrap').style.display = 'none';
+            document.getElementById('hangman-meta').innerText = data.solved ? 'Woord geraden!' : `Geen levens meer. Het woord was: ${data.word}`;
+        });
+
+        function applyHangmanState(data) {
+            const lives = typeof data.lives === 'number' ? data.lives : 10;
+            const guessedLetters = Array.isArray(data.guessed_letters) ? data.guessed_letters : [];
+            const wrongLetters = Array.isArray(data.wrong_letters) ? data.wrong_letters : [];
+            document.getElementById('hangman-word').innerText = data.word_mask || '';
+            document.getElementById('hangman-meta').innerText = `Levens: ${lives}/10${guessedLetters.length ? ' | Letters: ' + guessedLetters.join(', ') : ''}${wrongLetters.length ? ' | Fout: ' + wrongLetters.join(', ') : ''}`;
+        }
+
+        function sendHangmanLetter() {
+            if(myName !== 'HOST' || hangmanFinished) return;
+            const input = document.getElementById('hangman-input');
+            const letter = (input.value || '').trim().toLowerCase();
+            if(!letter) return;
+            socket.emit('hangman_guess', {room: room, letter: letter});
+            input.value = '';
+            input.focus();
+        }
 
         function sendAnswer() {
             const ans = document.getElementById('answer-input').value;
@@ -160,8 +260,17 @@
         function requestNext() {
             const isShowingResults = document.getElementById('results-area').style.display === "block";
             const noAnswersPossible = (document.getElementById('status-bar').style.display === "none");
-            socket.emit('request_next', {room: room, force_next: isShowingResults || noAnswersPossible});
+            const thirtyOnScreen = document.getElementById('thirty-wrap').style.display === "block";
+            const hangmanOnScreen = document.getElementById('hangman-wrap').style.display === "block";
+            const forceNext = isShowingResults || noAnswersPossible || thirtyOnScreen || hangmanOnScreen || thirtyFinished || hangmanFinished;
+            socket.emit('request_next', {room: room, force_next: forceNext});
         }
+
+        document.addEventListener('keydown', (event) => {
+            if(event.key === 'Enter' && document.getElementById('hangman-wrap').style.display === 'block' && myName === 'HOST') {
+                sendHangmanLetter();
+            }
+        });
     </script>
 </body>
 </html>

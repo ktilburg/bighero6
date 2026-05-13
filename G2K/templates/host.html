@@ -9,6 +9,17 @@
         .card { background: #34495e; padding: 30px; border-radius: 15px; display: inline-block; min-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .slider-box { margin: 15px 0; text-align: left; }
         .val { float: right; font-weight: bold; color: #f1c40f; }
+        textarea {
+            width: 100%;
+            min-height: 90px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 8px;
+            box-sizing: border-box;
+            font: inherit;
+            resize: vertical;
+        }
         button { background: #27ae60; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
         .player-tag { background: #e67e22; padding: 5px 15px; border-radius: 20px; margin: 5px; display: inline-block; }
         #qr-code {
@@ -27,6 +38,7 @@
             <div class="slider-box">Ice Breakers <span class="val" id="v-ice">3</span><br><input type="range" id="ice" min="0" max="10" value="3" oninput="updateVal('ice')"></div>
             <div class="slider-box">Minigames <span class="val" id="v-mini">2</span><br><input type="range" id="mini" min="0" max="10" value="2" oninput="updateVal('mini')"></div>
             <div class="slider-box">Diepgang <span class="val" id="v-deep">3</span><br><input type="range" id="deep" min="0" max="10" value="3" oninput="updateVal('deep')"></div>
+            <div class="slider-box">Hangman woorden<br><textarea id="hangman-words" placeholder="Voeg extra woorden toe met komma's of nieuwe regels. Bijvoorbeeld:appel, fiets, computer"></textarea></div>
             
             <hr>
             <div style="text-align: left;">
@@ -60,11 +72,19 @@
 
         function updateVal(id) { document.getElementById('v-'+id).innerText = document.getElementById(id).value; }
 
+        function parseWords(text) {
+            return text
+                .split(/[\n,;]+/)
+                .map(word => word.trim())
+                .filter(Boolean);
+        }
+
         function createGame() {
             const settings = {
                 ice: document.getElementById('ice').value,
                 mini: document.getElementById('mini').value,
                 deep: document.getElementById('deep').value,
+                hangman_words: parseWords(document.getElementById('hangman-words').value),
                 custom_names: document.getElementById('custom_names').checked,
                 mode: document.getElementById('mode').value
             };
