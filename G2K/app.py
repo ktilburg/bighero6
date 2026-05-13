@@ -63,7 +63,7 @@ QUESTIONS = {
     "minigames": [
         # {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
         # {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"},
-        {"q": "Galgje", "type": "action"},
+        {"q": "Galgje","d":"Galgje is een spel waarbij je een woord moet raden door steeds een letter te kiezen. Je mag maar een beperkt aantal letters fout kiezen.","type": "action"},
         {"q": "Wordchain", "type": "action"},
         {"q": "Thirthy seconds", "type": "action."},
         # {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
@@ -78,10 +78,6 @@ QUESTIONS = {
         # {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"},
         {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua persoonlijkheid of juist totaal anders is?", "type": "open"}
     ],
-    "boomit_templates": [
-        "Wie gaf het meest verrassende antwoord op: '{prev_q}'?",
-        "Wie was volgens de groep de winnaar van de minigame: '{prev_game}'?"
-    ]
 }
 
 games = {}
@@ -135,7 +131,6 @@ def build_question_queue(settings):
             last_category = next_category
             streak = 1
 
-    queue += [('boomit', None) for _ in range(int(settings['boom']))]
     return queue
 
 @app.route('/')
@@ -175,9 +170,9 @@ def game_page(): return render_template('game.html')
 def on_validate(data):
     room = data.get('room')
     if room in games:
-        emit('code_valid', {'valid': True, 'room': room, 'custom_names': games[room]['settings'].get('custom_names', True)}, to=request.sid)
+        emit('code_valid', {'valid': True, 'room': room, 'custom_names': games[room]['settings'].get('custom_names', True)}, to=request.sid) # type: ignore
     else:
-        emit('code_valid', {'valid': False}, to=request.sid)
+        emit('code_valid', {'valid': False}, to=request.sid) # type: ignore
 
 @socketio.on('create_game')
 def on_create(data):
@@ -186,7 +181,7 @@ def on_create(data):
         'players': [], 'history': [], 'settings': data.get('settings'), 'queue': [], 'current_answers': [], 'answered_count': 0
     }
     join_room(room)
-    emit('game_created', {'room': room}, to=request.sid)
+    emit('game_created', {'room': room}, to=request.sid) # type: ignore
 
 @socketio.on('join_game')
 def on_join(data):
@@ -199,7 +194,7 @@ def on_join(data):
         player = {"name": name, "emoji": random.choice(["🦁","🚀","🥑","👾","🎸","🍕"])}
         games[room]['players'].append(player)
         emit('player_joined', games[room]['players'], to=room)
-        emit('name_assigned', {'name': name}, to=request.sid)
+        emit('name_assigned', {'name': name}, to=request.sid) # type: ignore
 
 @socketio.on('start_game')
 def on_start(data):
@@ -236,14 +231,9 @@ def send_next_question(room):
         return
     game['answered_count'] = 0
     cat, q_obj = game['queue'].pop(0)
-    if cat == 'boomit':
-        prev = random.choice(game['history']) if game['history'] else "deze sessie"
-        q_text = random.choice(QUESTIONS['boomit_templates']).replace('{prev_q}', prev).replace('{prev_game}', prev)
-        q_type = 'boomit'
-    else:
-        q_text = q_obj['q']
-        q_type = q_obj.get('type', 'open')
-        game['history'].append(q_text)
+    q_text = q_obj['q']
+    q_type = q_obj.get('type', 'open')
+    game['history'].append(q_text)
     emit('next_round', {
         'category': cat, 'question': q_text, 'type': q_type, 
         'mode': game['settings']['mode'], 'total_players': len(game['players']) - 1
