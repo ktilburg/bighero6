@@ -53,12 +53,14 @@ QUESTIONS = {
         # {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
         # {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
-        {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "action"},
         # {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
-        {"q": "Welke superkracht zou je willen hebben?", "type": "action"},
+        {"q": "Welke superkracht zou je willen hebben?", "type": "open"},
         # {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
-        # {"q": "Would you rather? Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "action"},
-        {"q": "Wat voor serie/film/boek zou je opnieuw willen zien/lezen?", "type": "action"},
+        {"q": "Wat voor serie/film/boek zou je opnieuw willen zien/lezen?", "type": "open"},
+    ],
+    "would_you_rather": [
+        {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
+        {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
     ],
     "minigames": [
         # {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
@@ -70,7 +72,7 @@ QUESTIONS = {
     ],
     "get2know": [
         # {"q": "Waar ben je het meest dankbaar voor van de afgelopen week?", "type": "open"},
-        {"q": "Wat is een eigenschap die je echt in anderen bewondert?", "type": "open"},
+        {"q": "Wat is een eigenschap die je echt in anderen bewonderd?", "type": "open"},
         {"q": "Wat is iets wat je echt wilt doen/leren dit jaar?", "type": "open"},
         # {"q": "Wat is iets aan jou dat mensen niet meteen van je zouden verwachten?", "type": "open"},
         {"q": "Waar ben je trots op?", "type": "open"},
