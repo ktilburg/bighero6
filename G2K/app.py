@@ -54,7 +54,7 @@ QUESTIONS = {
         # {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
         # {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
-        {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "open"},
+        # {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "open"},
         # {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
         {"q": "Welke superkracht zou je willen hebben?", "type": "open"},
         # {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
@@ -66,7 +66,7 @@ QUESTIONS = {
         # {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"},
         {"q": "Galgje","d":"Galgje is een spel waarbij je een woord moet raden door steeds een letter te kiezen. Je mag maar een beperkt aantal letters fout kiezen.","type": "action"},
         {"q": "Wordchain", "type": "action"},
-        {"q": "Thirthy seconds", "type": "action."},
+        {"q": "Thirty seconds", "type": "action."},
         # {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
     ],
     "get2know": [
@@ -82,6 +82,11 @@ QUESTIONS = {
     "would_you_rather": [
         {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
         {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, or elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
+    ],
+    "statements": [
+        {"q": "Kwaliteit gaat altijd boven kwantiteit als het gaat om je sociale kring.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
+        {"q": "Sociale media heeft sociale contacten oppervlakkiger gemaakt.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
+        {"q": "Een goede vriend hoort je te steunen, zelfs als je overduidelijk ongelijk hebt.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
     ],
 }
 
@@ -131,6 +136,11 @@ def build_question_queue(settings):
         QUESTIONS['would_you_rather'],
         min(int(settings['wy']), len(QUESTIONS['would_you_rather']))
     )]
+    
+    statements = [('statements', q) for q in random.sample(
+        QUESTIONS['statements'],
+        min(int(settings.get('st', 0)), len(QUESTIONS['statements']))
+    )]
 
     minigames = [('minigames', q) for q in random.sample(
         QUESTIONS['minigames'],
@@ -151,6 +161,7 @@ def build_question_queue(settings):
         'minigames': minigames,
         'get2know': get2know,
         'would_you_rather': would_you_rather,
+        'statements': statements,
     }
     last_category = queue[-1][0] if queue else None
     streak = 1 if last_category in active_pools else 0

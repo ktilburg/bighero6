@@ -9,6 +9,8 @@
             --card-shadow: 12px 12px 0px rgba(0,0,0,0.1);
             --wyr-teal: #1abc9c;
             --wyr-blue: #b4c7ed;
+            --statement-pink: #f4b4d6;
+            --statement-yellow: #f8e367;
             --green-line: #e3f4e1;
         }
 
@@ -80,7 +82,15 @@
             transform: none; height: 100px; border-radius: 20px 0 0 20px;
         }
 
-        h1#question-text { font-size: 36px; font-weight: 800; margin: 0; color: #000; line-height: 1.2; }
+        /* Kleuren voor Statements */
+        body.theme-statements .wyr-btn:first-child { 
+            background-color: var(--statement-pink) !important; 
+        }
+        body.theme-statements .wyr-btn:last-child { 
+            background-color: var(--statement-yellow) !important; 
+        }
+
+        h1#question-text { font-size: 34px; font-weight: 800; margin: 0; color: #000; line-height: 1.2; }
 
         #wyr-options-container {
             display: none; grid-template-columns: 1fr 1fr; gap: 30px;
@@ -93,8 +103,8 @@
             box-shadow: 8px 8px 0px #000; transition: transform 0.1s, background-color 0.2s;
         }
         
-        .wyr-btn.teal { background-color: var(--wyr-teal) !important; }
-        .wyr-btn.blue { background-color: var(--wyr-blue) !important; }
+        .wyr-btn.teal { background-color: var(--wyr-teal); }
+        .wyr-btn.blue { background-color: var(--wyr-blue); }
 
         body:not(.is-host) .wyr-btn:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0px #000; }
         body.is-host .wyr-btn { cursor: default; }
@@ -109,7 +119,6 @@
         }
 
         #results-area { background: #fff; padding: 30px; border-radius: 25px; border: 3px solid #000; margin-top: 30px; display: none; text-align: left; width: 100%; box-sizing: border-box; font-size: 20px; }
-        
         #wordchain-theme { font-size: 48px; font-weight: 900; color: #8e44ad; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
@@ -206,7 +215,7 @@
         socket.on('next_round', (data) => {
             clearInterval(thirtyInterval);
             thirtyRoundActive = false;
-            resetUI(); // Hier worden alle containers verborgen
+            resetUI();
 
             if (data.category === 'ice_breakers' && !introShown) {
                 showIntroAnimation();
@@ -220,7 +229,7 @@
             
             updateVisuals(data.category, data.type);
 
-            if (data.category === 'would_you_rather' && data.options) {
+            if ((data.category === 'would_you_rather' || data.category === 'statements') && data.options) {
                 document.getElementById('wyr-options-container').style.display = "grid";
                 document.getElementById('wyr-0').innerText = data.options[0];
                 document.getElementById('wyr-1').innerText = data.options[1];
@@ -289,6 +298,11 @@
                 logo.src = "/static/images/would_you_rather_header.png";
                 bgLines.style.backgroundImage = "url('/static/images/background_rounded_line_green.png')";
                 sTL.style.display = "none"; sBR.style.display = "none";
+            } else if (cat === 'statements') {
+                logo.src = "/static/images/agree_or_disagree_header.png";
+                bgLines.style.backgroundImage = "url('/static/images/background_rounded_line_yellow.png')";
+                sTL.style.display = "none"; 
+                sBR.style.display = "none";
             }
         }
 
@@ -320,8 +334,8 @@
         }
 
         function requestNext() {
-            const force = document.getElementById('results-area').style.display === "block" || 
-                         document.getElementById('wyr-options-container').style.display === "grid";
+            const isVisible = (id) => document.getElementById(id).style.display !== "none" && document.getElementById(id).style.display !== "";
+            const force = isVisible('results-area') || isVisible('wyr-options-container');
             socket.emit('request_next', {room: room, force_next: force});
         }
 
@@ -365,7 +379,6 @@
             } else {
                 container.innerHTML = p.woorden.map(w => `<span style="background:#eee; padding:10px 15px; border-radius:15px; border:2px solid #000;">${w}</span>`).join(' ');
             }
-
         }
 
         function beginThirtySecondsCountdown() {

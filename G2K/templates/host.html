@@ -29,18 +29,23 @@
             border: 4px solid white;
             border-radius: 10px;
         }
+        hr { border: 0; border-top: 1px solid #5d6d7e; margin: 20px 0; }
     </style>
 </head>
 <body>
     <div class="card">
         <div id="setup-area">
             <h1>Game Setup</h1>
+            
             <div class="slider-box">Ice Breakers <span class="val" id="v-ice">3</span><br><input type="range" id="ice" min="0" max="10" value="3" oninput="updateVal('ice')"></div>
             <div class="slider-box">Minigames <span class="val" id="v-mini">2</span><br><input type="range" id="mini" min="0" max="10" value="2" oninput="updateVal('mini')"></div>
             <div class="slider-box">Diepgang <span class="val" id="v-deep">3</span><br><input type="range" id="deep" min="0" max="10" value="3" oninput="updateVal('deep')"></div>
-            <div class="slider-box">Hangman woorden<br><textarea id="hangman-words" placeholder="Voeg extra woorden toe met komma's of nieuwe regels. Bijvoorbeeld:appel, fiets, computer"></textarea></div>
             <div class="slider-box">Would You Rather <span class="val" id="v-wy">3</span><br><input type="range" id="wy" min="0" max="10" value="3" oninput="updateVal('wy')"></div>
+            <div class="slider-box">Statements <span class="val" id="v-st">3</span><br><input type="range" id="st" min="0" max="10" value="3" oninput="updateVal('st')"></div>
+            <div class="slider-box">Hangman woorden<br><textarea id="hangman-words" placeholder="Voeg extra woorden toe met komma's of nieuwe regels."></textarea></div>
+            
             <hr>
+            
             <div style="text-align: left;">
                 <label><input type="checkbox" id="custom_names" checked> Eigen namen toestaan</label><br><br>
                 <label>Modus: 
@@ -50,16 +55,15 @@
                     </select>
                 </label>
             </div>
+            
             <button onclick="createGame()">Maak Lobby</button>
         </div>
 
         <div id="lobby-area" style="display:none;">
             <h1>Code: <span id="display-code" style="color: #f1c40f;"></span></h1>
-            
             <div style="margin: 20px 0;">
                 <div id="qr-code" aria-label="Scan to Join"></div>
             </div>
-
             <div id="player-list"></div>
             <br>
             <button onclick="startGame()">START HET SPEL</button>
@@ -70,7 +74,9 @@
         const socket = io();
         let currentRoom = "";
 
-        function updateVal(id) { document.getElementById('v-'+id).innerText = document.getElementById(id).value; }
+        function updateVal(id) { 
+            document.getElementById('v-'+id).innerText = document.getElementById(id).value; 
+        }
 
         function parseWords(text) {
             return text
@@ -84,8 +90,9 @@
                 ice: document.getElementById('ice').value,
                 mini: document.getElementById('mini').value,
                 deep: document.getElementById('deep').value,
-                hangman_words: parseWords(document.getElementById('hangman-words').value),
                 wy: document.getElementById('wy').value,
+                st: document.getElementById('st').value, 
+                hangman_words: parseWords(document.getElementById('hangman-words').value),
                 custom_names: document.getElementById('custom_names').checked,
                 mode: document.getElementById('mode').value
             };
