@@ -64,8 +64,8 @@ QUESTIONS = {
         # {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
         # {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"},
         {"q": "Galgje","d":"Galgje is een spel waarbij je een woord moet raden door steeds een letter te kiezen. Je mag maar een beperkt aantal letters fout kiezen.","type": "action"},
-        {"q": "Wordchain", "type": "action"},
-        {"q": "Thirthy seconds", "type": "action."},
+        {"q": "Wordchain","d" : "pak een thema nadat een thema besloten is ga woorden af binnen dit thema waarbij de eerste letter van het woord hetzelfde moet zijn als de laatste letter van het vorige woord ga door todat iemand geen woord meer kan verzinnen", "type": "action"},
+        {"q": "Thirthy seconds","d":"In dit spel telt elke seconde, waardoor er altijd een energieke sfeer ontstaat. Het concept is eenvoudig: omschrijf zoveel mogelijk begrippen in 30 seconden zonder de woorden op het kaartje te gebruiken. Je teamgenoten moeten snel raden.", "type": "action."},
         # {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
     ],
     "get2know": [
