@@ -43,7 +43,7 @@
             <button class="ans-btn" onclick="sendAnswer()">Verstuur</button>
         </div>
 
-        <div id="feedback-wrap" class="feedback-wrap">
+        <div id="feedback-wrap" class="feedback-wrap" style="display:none;">
             <button class="feedback-btn feedback-up" id="feedback-up-btn" onclick="sendFeedback('up')">👍 Thumbs up</button>
             <button class="feedback-btn feedback-down" id="feedback-down-btn" onclick="sendFeedback('down')">👎 Thumbs down</button>
         </div>
@@ -97,7 +97,7 @@
                 document.getElementById('answer-section').style.display = "none";
             }
 
-            document.getElementById('feedback-wrap').style.display = "flex";
+            document.getElementById('feedback-wrap').style.display = "none";
 
             if(myName === "HOST") document.getElementById('next-btn').style.display = "inline-block";
         });

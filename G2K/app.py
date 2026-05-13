@@ -44,7 +44,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 #             })
 
 
-load_feedback_scores()
+# load_feedback_scores()
 
 OBJECT_NAMES = ["Banaan", "Koekenpan", "Stofzuiger", "Gitaar", "Cactus", "Laptop", "Ananas", "Vliegtuig", "Watermeloen", "Tandenborstel", "Wasmachine", "Robot"]
 QUESTIONS = {
@@ -148,28 +148,28 @@ def host_page(): return render_template('host.html')
 def game_page(): return render_template('game.html')
 
 
-@socketio.on('submit_feedback')
-def on_feedback(data):
-    question = (data.get('question') or '').strip()
-    vote = data.get('vote')
-    if not question or vote not in ('up', 'down'):
-        emit('feedback_saved', {'ok': False}, to=request.sid)
-        return
+# @socketio.on('submit_feedback')
+# def on_feedback(data):
+#     question = (data.get('question') or '').strip()
+#     vote = data.get('vote')
+#     if not question or vote not in ('up', 'down'):
+#         emit('feedback_saved', {'ok': False}, to=request.sid)
+#         return
 
-    with feedback_lock:
-        counts = feedback_scores[question]
-        if vote == 'up':
-            counts['upvotes'] += 1
-        else:
-            counts['downvotes'] += 1
-        save_feedback_scores()
+#     with feedback_lock:
+#         counts = feedback_scores[question]
+#         if vote == 'up':
+#             counts['upvotes'] += 1
+#         else:
+#             counts['downvotes'] += 1
+#         save_feedback_scores()
 
-    emit('feedback_saved', {
-        'ok': True,
-        'question': question,
-        'upvotes': feedback_scores[question]['upvotes'],
-        'downvotes': feedback_scores[question]['downvotes'],
-    }, to=request.sid)
+#     emit('feedback_saved', {
+#         'ok': True,
+#         'question': question,
+#         'upvotes': feedback_scores[question]['upvotes'],
+#         'downvotes': feedback_scores[question]['downvotes'],
+#     }, to=request.sid)
 
 @socketio.on('validate_code')
 def on_validate(data):
