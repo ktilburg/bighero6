@@ -79,6 +79,11 @@ QUESTIONS = {
         # {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"},
         {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua Intresses of juist totaal anders is?", "type": "open"}
     ],
+    "would_you_rather": [
+        {"q": "Zou je liever supersterk zijn of supersnel?", "type": "open"},
+        {"q": "Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "open"},
+        {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "open"},
+    ],
 }
 
 # Load thirty-seconds lists 

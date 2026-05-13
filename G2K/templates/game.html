@@ -186,10 +186,9 @@
 
         function applyHangmanState(data) {
             const lives = typeof data.lives === 'number' ? data.lives : 10;
-            const guessedLetters = Array.isArray(data.guessed_letters) ? data.guessed_letters : [];
             const wrongLetters = Array.isArray(data.wrong_letters) ? data.wrong_letters : [];
             document.getElementById('hangman-word').innerText = data.word_mask || '';
-            document.getElementById('hangman-meta').innerText = `Levens: ${lives}/10${guessedLetters.length ? ' | Letters: ' + guessedLetters.join(', ') : ''}${wrongLetters.length ? ' | Fout: ' + wrongLetters.join(', ') : ''}`;
+            document.getElementById('hangman-meta').innerText = `Levens: ${lives}/10${wrongLetters.length ? ' | Fout: ' + wrongLetters.join(', ') : ''}`;
         }
 
         function sendHangmanLetter() {
