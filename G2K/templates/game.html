@@ -62,6 +62,7 @@
             <div id="hangman-input-wrap">
                 <input type="text" id="hangman-input" maxlength="1" placeholder="a">
                 <button class="ans-btn" onclick="sendHangmanLetter()">Stuur letter</button>
+                <button class="ans-btn" style="background: #f39c12;" onclick="sendHint()">💡 Hint (-1 life)</button>
             </div>
         </div>
         <div id="thirty-wrap" style="display:none; margin-top:18px; text-align:center;">
@@ -189,6 +190,11 @@
             const wrongLetters = Array.isArray(data.wrong_letters) ? data.wrong_letters : [];
             document.getElementById('hangman-word').innerText = data.word_mask || '';
             document.getElementById('hangman-meta').innerText = `Levens: ${lives}/10${wrongLetters.length ? ' | Fout: ' + wrongLetters.join(', ') : ''}`;
+        }
+
+        function sendHint() {
+            if(myName !== 'HOST' || hangmanFinished) return;
+            socket.emit('hangman_hint', {room: room});
         }
 
         function sendHangmanLetter() {
