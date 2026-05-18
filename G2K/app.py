@@ -83,6 +83,11 @@ QUESTIONS = {
         {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
         {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, or elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
     ],
+    "statements": [
+        {"q": "Kwaliteit gaat altijd boven kwantiteit als het gaat om je sociale kring.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
+        {"q": "Sociale media heeft sociale contacten oppervlakkiger gemaakt.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
+        {"q": "Een goede vriend hoort je te steunen, zelfs als je overduidelijk ongelijk hebt.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
+    ],
 }
 
 # Load thirty-seconds lists 
@@ -131,6 +136,11 @@ def build_question_queue(settings):
         QUESTIONS['would_you_rather'],
         min(int(settings['wy']), len(QUESTIONS['would_you_rather']))
     )]
+    
+    statements = [('statements', q) for q in random.sample(
+        QUESTIONS['statements'],
+        min(int(settings.get('st', 0)), len(QUESTIONS['statements']))
+    )]
 
     minigames = [('minigames', q) for q in random.sample(
         QUESTIONS['minigames'],
@@ -151,6 +161,7 @@ def build_question_queue(settings):
         'minigames': minigames,
         'get2know': get2know,
         'would_you_rather': would_you_rather,
+        'statements': statements,
     }
     last_category = queue[-1][0] if queue else None
     streak = 1 if last_category in active_pools else 0
@@ -274,7 +285,7 @@ def on_hangman_guess(data):
     if room not in games or not letter:
         return
 
-    game = games[room]x
+    game = games[room]
     hangman = game.get('hangman')
     if not hangman or hangman.get('finished'):
         return
