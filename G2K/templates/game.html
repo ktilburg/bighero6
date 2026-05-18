@@ -118,6 +118,12 @@
             border-radius: 60px; font-weight: 900; cursor: pointer; box-shadow: 6px 6px 0px #000; font-size: 20px;
         }
 
+        #back-btn {
+            position: fixed; bottom: 40px; left: 40px; z-index: 10;
+            background: #ffffff; border: 3px solid #000; padding: 20px 35px;
+            border-radius: 60px; font-weight: 900; cursor: pointer; box-shadow: 6px 6px 0px #000; font-size: 20px;
+        }
+
         #results-area { background: #fff; padding: 30px; border-radius: 25px; border: 3px solid #000; margin-top: 30px; display: none; text-align: left; width: 100%; box-sizing: border-box; font-size: 20px; }
         #wordchain-theme { font-size: 48px; font-weight: 900; color: #8e44ad; margin-top: 20px; text-transform: uppercase; }
     </style>
@@ -184,6 +190,7 @@
         </div>
     </div>
 
+    <button id="back-btn" style="display:none;" onclick="requestBack()">← TERUG</button>
     <button id="next-btn" style="display:none;" onclick="requestNext()">VOLGENDE ➔</button>
 
     <script>
@@ -253,7 +260,10 @@
                 document.getElementById('answer-input').value = "";
             }
 
-            if (myName === "HOST") document.getElementById('next-btn').style.display = "block";
+            if (myName === "HOST") {
+                document.getElementById('next-btn').style.display = "block";
+                document.getElementById('back-btn').style.display = "block";
+            }
         });
 
         function showIntroAnimation() {
@@ -311,6 +321,7 @@
             resetUI();
             document.getElementById('question-text').innerText = data.message;
             document.getElementById('next-btn').style.display = "none";
+            document.getElementById('back-btn').style.display = "none";
             document.getElementById('theme-logo').style.display = "none";
             document.getElementById('star-tl').style.display = "none";
             document.getElementById('star-br').style.display = "none";
@@ -338,6 +349,10 @@
             const isVisible = (id) => document.getElementById(id).style.display !== "none" && document.getElementById(id).style.display !== "";
             const force = isVisible('results-area') || isVisible('wyr-options-container');
             socket.emit('request_next', {room: room, force_next: force});
+        }
+
+        function requestBack() {
+            socket.emit('request_back', {room: room});
         }
 
         socket.on('update_status', (data) => {
