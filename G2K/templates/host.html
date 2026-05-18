@@ -37,11 +37,11 @@
         <div id="setup-area">
             <h1>Game Setup</h1>
             
-            <div class="slider-box">Ice Breakers <span class="val" id="v-ice">3</span><br><input type="range" id="ice" min="0" max="10" value="3" oninput="updateVal('ice')"></div>
-            <div class="slider-box">Minigames <span class="val" id="v-mini">2</span><br><input type="range" id="mini" min="0" max="10" value="2" oninput="updateVal('mini')"></div>
-            <div class="slider-box">Diepgang <span class="val" id="v-deep">3</span><br><input type="range" id="deep" min="0" max="10" value="3" oninput="updateVal('deep')"></div>
-            <div class="slider-box">Would You Rather <span class="val" id="v-wy">3</span><br><input type="range" id="wy" min="0" max="10" value="3" oninput="updateVal('wy')"></div>
-            <div class="slider-box">Statements <span class="val" id="v-st">3</span><br><input type="range" id="st" min="0" max="10" value="3" oninput="updateVal('st')"></div>
+            <div class="slider-box">Ice Breakers <span class="val" id="v-ice">3 / {{ slider_maxes.ice }}</span><br><input type="range" id="ice" min="0" max="{{ slider_maxes.ice }}" value="3" oninput="updateVal('ice')"></div>
+            <div class="slider-box">Minigames <span class="val" id="v-mini">2 / {{ slider_maxes.mini }}</span><br><input type="range" id="mini" min="0" max="{{ slider_maxes.mini }}" value="2" oninput="updateVal('mini')"></div>
+            <div class="slider-box">Diepgang <span class="val" id="v-deep">3 / {{ slider_maxes.deep }}</span><br><input type="range" id="deep" min="0" max="{{ slider_maxes.deep }}" value="3" oninput="updateVal('deep')"></div>
+            <div class="slider-box">Would You Rather <span class="val" id="v-wy">2 / {{ slider_maxes.wy }}</span><br><input type="range" id="wy" min="0" max="{{ slider_maxes.wy }}" value="2" oninput="updateVal('wy')"></div>
+            <div class="slider-box">Statements <span class="val" id="v-st">3 / {{ slider_maxes.st }}</span><br><input type="range" id="st" min="0" max="{{ slider_maxes.st }}" value="3" oninput="updateVal('st')"></div>
             <div class="slider-box">Hangman woorden<br><textarea id="hangman-words" placeholder="Voeg extra woorden toe met komma's of nieuwe regels."></textarea></div>
             
             <hr>
@@ -75,8 +75,11 @@
         let currentRoom = "";
 
         function updateVal(id) { 
-            document.getElementById('v-'+id).innerText = document.getElementById(id).value; 
+            const slider = document.getElementById(id);
+            document.getElementById('v-' + id).innerText = `${slider.value} / ${slider.max}`;
         }
+
+        ['ice', 'mini', 'deep', 'wy', 'st'].forEach(updateVal);
 
         function parseWords(text) {
             return text

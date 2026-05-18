@@ -54,7 +54,7 @@ QUESTIONS = {
         # {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
         # {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
-        # {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "open"},
+        {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "open"},
         # {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
         {"q": "Welke superkracht zou je willen hebben?", "type": "open"},
         # {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
@@ -82,11 +82,6 @@ QUESTIONS = {
     "would_you_rather": [
         {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
         {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, or elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
-    ],
-    "statements": [
-        {"q": "Kwaliteit gaat altijd boven kwantiteit als het gaat om je sociale kring.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
-        {"q": "Sociale media heeft sociale contacten oppervlakkiger gemaakt.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
-        {"q": "Een goede vriend hoort je te steunen, zelfs als je overduidelijk ongelijk hebt.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
     ],
 }
 
@@ -136,11 +131,6 @@ def build_question_queue(settings):
         QUESTIONS['would_you_rather'],
         min(int(settings['wy']), len(QUESTIONS['would_you_rather']))
     )]
-    
-    statements = [('statements', q) for q in random.sample(
-        QUESTIONS['statements'],
-        min(int(settings.get('st', 0)), len(QUESTIONS['statements']))
-    )]
 
     minigames = [('minigames', q) for q in random.sample(
         QUESTIONS['minigames'],
@@ -161,7 +151,6 @@ def build_question_queue(settings):
         'minigames': minigames,
         'get2know': get2know,
         'would_you_rather': would_you_rather,
-        'statements': statements,
     }
     last_category = queue[-1][0] if queue else None
     streak = 1 if last_category in active_pools else 0
@@ -192,7 +181,15 @@ def build_question_queue(settings):
 def index(): return render_template('index.html')
 
 @app.route('/host')
-def host_page(): return render_template('host.html')
+def host_page():
+    slider_maxes = {
+        'ice': min(len(QUESTIONS['ice_breakers']), 10),
+        'mini': min(len(QUESTIONS['minigames']), 10),
+        'deep': min(len(QUESTIONS['get2know']), 10),
+        'wy': min(len(QUESTIONS['would_you_rather']), 10),
+        'st': 10,
+    }
+    return render_template('host.html', slider_maxes=slider_maxes)
 
 @app.route('/game')
 def game_page(): return render_template('game.html')
@@ -277,7 +274,7 @@ def on_hangman_guess(data):
     if room not in games or not letter:
         return
 
-    game = games[room]
+    game = games[room]x
     hangman = game.get('hangman')
     if not hangman or hangman.get('finished'):
         return
@@ -321,7 +318,6 @@ def on_hangman_hint(data):
     # Lose one life for using hint
     hangman['lives'] -= 1
     
-    # Find an unguessed letter and reveal it
     secret_word = hangman['word'].lower()
     unguessed = [char for char in secret_word if char.isalpha() and char not in hangman['guessed_letters']]
     
@@ -329,7 +325,7 @@ def on_hangman_hint(data):
         revealed_letter = random.choice(unguessed)
         hangman['guessed_letters'].append(revealed_letter)
     
-    # Check if solved
+    # Check solved
     solved = _hangman_is_solved(secret_word, hangman['guessed_letters'])
     hangman['solved'] = solved
     hangman['finished'] = solved or hangman['lives'] <= 0
@@ -370,7 +366,7 @@ def send_next_question(room):
     q_type = q_obj.get('type', 'open')
     payload = None
 
-    # Specifieke minigame logica
+    # minigame logica
     if q_text == 'Wordchain':
         theme = random.choice(WORDCHAIN_THEMES) if WORDCHAIN_THEMES else 'Dieren'
         q_text = theme
@@ -406,7 +402,6 @@ def send_next_question(room):
         'total_players': len(game['players']) - 1
     }
     
-    # Belangrijk: stuur de opties mee voor Would You Rather!
     if 'options' in q_obj:
         emit_payload['options'] = q_obj['options']
         
