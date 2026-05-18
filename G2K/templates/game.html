@@ -27,8 +27,13 @@
             position: fixed; top: 50%; left: 0; transform: translateY(-50%);
             width: 100vw; height: 90vh; z-index: -1;
             background-repeat: no-repeat; background-position: center;
-            background-size: 100% 100%; transition: background-image 0.5s ease-in-out;
+            background-size: 100% 100%;
             pointer-events: none;
+            transition: background-image 0.5s ease-in-out;        
+        }
+
+        #image-preloader {
+            position: absolute; width: 0; height: 0; overflow: hidden; z-index: -9999; pointer-events: none;
         }
 
         /* Intro Overlay Styles */
@@ -53,6 +58,18 @@
         .intro-star.star-2 { right: 10%; bottom: -40px; transform: rotate(15deg); }
         .fade-out { animation: fadeOut 0.8s forwards; }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+        .animate-fade-out { animation: cardFadeOut 0.4s ease-in forwards; }
+        .animate-fade-in { animation: cardFadeIn 0.5s ease-out forwards; }
+
+        @keyframes cardFadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: scale(1.05); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
         .game-container {
             position: relative; display: inline-block;
@@ -124,6 +141,14 @@
 </head>
 <body id="game-body">
 
+    <div id="image-preloader">
+        <img src="/static/images/background_rounded_line_purple.png">
+        <img src="/static/images/background_rounded_line_blue.png">
+        <img src="/static/images/background_rounded_line_orange.png">
+        <img src="/static/images/background_rounded_line_green.png">
+        <img src="/static/images/background_rounded_line_yellow.png">
+    </div>
+
     <div id="intro-overlay">
         <div id="intro-bg"></div>
         <div class="intro-content">
@@ -135,7 +160,7 @@
 
     <div id="bg-lines"></div>
 
-    <div class="game-container">
+    <div class="game-container" id="game-animate-container">
         <img id="theme-logo" src="" class="theme-logo" style="display:none;">
         <img id="star-tl" src="/static/images/star_blue.png" class="decoration star-tl">
         <img id="star-br" src="/static/images/star_pink.png" class="decoration star-br">
@@ -216,44 +241,55 @@
         socket.on('next_round', (data) => {
             clearInterval(thirtyInterval);
             thirtyRoundActive = false;
-            resetUI();
 
-            if (data.category === 'ice_breakers' && !introShown) {
-                showIntroAnimation();
-                introShown = true;
-            }
-
-            document.body.classList.forEach(cls => { if(cls.startsWith('theme-')) document.body.classList.remove(cls); });
-            document.body.classList.add('theme-' + data.category);
-
-            document.getElementById('question-text').innerText = data.question;
+            const animContainer = document.getElementById('game-animate-container');
             
-            updateVisuals(data.category, data.type);
+            animContainer.classList.remove('animate-fade-in');
+            animContainer.classList.add('animate-fade-out');
 
-            if ((data.category === 'would_you_rather' || data.category === 'statements') && data.options) {
-                document.getElementById('wyr-options-container').style.display = "grid";
-                document.getElementById('wyr-0').innerText = data.options[0];
-                document.getElementById('wyr-1').innerText = data.options[1];
-            } 
-            else if (data.type === 'hangman') {
-                document.getElementById('hangman-wrap').style.display = "block";
-                updateHangman(data.payload);
-            }
-            else if (data.type === 'thirty_seconds') {
-                document.getElementById('thirty-wrap').style.display = "block";
-                prepareThirtySeconds(data.payload);
-            }
-            else if (data.type === 'wordchain') {
-                document.getElementById('question-text').innerText = "Wordchain!";
-                document.getElementById('wordchain-wrap').style.display = "block";
-                document.getElementById('wordchain-theme').innerText = data.payload.theme;
-            }
-            else if (data.mode === 'digitaal' && myName !== "HOST") {
-                document.getElementById('answer-section').style.display = "block";
-                document.getElementById('answer-input').value = "";
-            }
+            setTimeout(() => {
+                resetUI();
 
-            if (myName === "HOST") document.getElementById('next-btn').style.display = "block";
+                if (data.category === 'ice_breakers' && !introShown) {
+                    showIntroAnimation();
+                    introShown = true;
+                }
+
+                document.body.classList.forEach(cls => { if(cls.startsWith('theme-')) document.body.classList.remove(cls); });
+                document.body.classList.add('theme-' + data.category);
+
+                document.getElementById('question-text').innerText = data.question;
+                
+                updateVisuals(data.category, data.type);
+
+                if ((data.category === 'would_you_rather' || data.category === 'statements') && data.options) {
+                    document.getElementById('wyr-options-container').style.display = "grid";
+                    document.getElementById('wyr-0').innerText = data.options[0];
+                    document.getElementById('wyr-1').innerText = data.options[1];
+                } 
+                else if (data.type === 'hangman') {
+                    document.getElementById('hangman-wrap').style.display = "block";
+                    updateHangman(data.payload);
+                }
+                else if (data.type === 'thirty_seconds') {
+                    document.getElementById('thirty-wrap').style.display = "block";
+                    prepareThirtySeconds(data.payload);
+                }
+                else if (data.type === 'wordchain') {
+                    document.getElementById('question-text').innerText = "Wordchain!";
+                    document.getElementById('wordchain-wrap').style.display = "block";
+                    document.getElementById('wordchain-theme').innerText = data.payload.theme;
+                }
+                else if (data.mode === 'digitaal' && myName !== "HOST") {
+                    document.getElementById('answer-section').style.display = "block";
+                    document.getElementById('answer-input').value = "";
+                }
+
+                if (myName === "HOST") document.getElementById('next-btn').style.display = "block";
+
+                animContainer.classList.remove('animate-fade-out');
+                animContainer.classList.add('animate-fade-in');
+            }, 400); 
         });
 
         function showIntroAnimation() {
