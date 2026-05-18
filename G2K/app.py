@@ -77,11 +77,11 @@ QUESTIONS = {
         {"q": "Waar ben je trots op?", "type": "open"},
         # {"q": "Wanneer heb je het gevoel dat iemand jou echt begrijpt? ", "type": "open"},
         # {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"},
-        {"q": "zou je liever vrienden zijn met iemand die heel veel op je lijkt qua Intresses of juist totaal anders is?", "type": "open"}
+        # {"q": "Zou je liever vrienden zijn met iemand die heel veel op je lijkt qua intresses of juist totaal anders is?", "type": "open"}
     ],
     "would_you_rather": [
         {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
-        {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, or elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
+        {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
     ],
     "statements": [
         {"q": "Kwaliteit gaat altijd boven kwantiteit als het gaat om je sociale kring.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
@@ -166,7 +166,7 @@ def build_question_queue(settings):
     last_category = queue[-1][0] if queue else None
     streak = 1 if last_category in active_pools else 0
 
-    while active_pools['minigames'] or active_pools['get2know'] or active_pools['would_you_rather']:
+    while active_pools['minigames'] or active_pools['get2know'] or active_pools['would_you_rather'] or active_pools['statements']:
         available_categories = [
             category for category, pool in active_pools.items() if pool
         ]
@@ -192,7 +192,15 @@ def build_question_queue(settings):
 def index(): return render_template('index.html')
 
 @app.route('/host')
-def host_page(): return render_template('host.html')
+def host_page():
+    slider_maxes = {
+        'ice': min(len(QUESTIONS['ice_breakers']), 10),
+        'mini': min(len(QUESTIONS['minigames']), 10),
+        'deep': min(len(QUESTIONS['get2know']), 10),
+        'wy': min(len(QUESTIONS['would_you_rather']), 10),
+        'st': min(len(QUESTIONS['statements']), 10),
+    }
+    return render_template('host.html', slider_maxes=slider_maxes)
 
 @app.route('/game')
 def game_page(): return render_template('game.html')
@@ -234,7 +242,8 @@ def on_create(data):
     room = str(random.randint(1000, 9999))
     settings = data.get('settings') or {}
     games[room] = {
-        'players': [], 'history': [], 'settings': settings, 'queue': [], 'current_answers': [], 'answered_count': 0, 'hangman': None
+        'players': [], 'history': [], 'settings': settings, 'queue': [], 'current_answers': [],
+        'answered_count': 0, 'hangman': None, 'round_history': [], 'revisit_stack': [], 'current_round': None
     }
     join_room(room)
     emit('game_created', {'room': room}, to=request.sid) # type: ignore
@@ -258,6 +267,9 @@ def on_start(data):
     if room in games:
         game = games[room]
         game['queue'] = build_question_queue(game['settings'])
+        game['round_history'] = []
+        game['revisit_stack'] = []
+        game['current_round'] = None
         socketio.sleep(1)
         send_next_question(room)
 
@@ -318,10 +330,14 @@ def on_hangman_hint(data):
     if not hangman or hangman.get('finished'):
         return
 
+    if hangman.get('hint_used'):
+        emit('hangman_state', _build_hangman_state(hangman), to=room)
+        return
+
     # Lose one life for using hint
     hangman['lives'] -= 1
+    hangman['hint_used'] = True
     
-    # Find an unguessed letter and reveal it
     secret_word = hangman['word'].lower()
     unguessed = [char for char in secret_word if char.isalpha() and char not in hangman['guessed_letters']]
     
@@ -329,7 +345,7 @@ def on_hangman_hint(data):
         revealed_letter = random.choice(unguessed)
         hangman['guessed_letters'].append(revealed_letter)
     
-    # Check if solved
+    # Check solved
     solved = _hangman_is_solved(secret_word, hangman['guessed_letters'])
     hangman['solved'] = solved
     hangman['finished'] = solved or hangman['lives'] <= 0
@@ -350,7 +366,39 @@ def handle_next(data):
             emit('show_results', {'answers': games[room]['current_answers']}, to=room)
             games[room]['current_answers'] = []
         else:
-            send_next_question(room)
+            game = games[room]
+            if game.get('revisit_stack'):
+                payload = game['revisit_stack'].pop()
+                game['current_answers'] = []
+                game['answered_count'] = 0
+                game['current_round'] = payload
+                game['round_history'].append(payload)
+                emit('update_status', {'answered': 0, 'total': len(game['players']) - 1}, to=room)
+                emit('next_round', payload, to=room)
+            else:
+                send_next_question(room)
+
+@socketio.on('request_back')
+def handle_back(data):
+    room = data.get('room')
+    if room not in games:
+        return
+
+    game = games[room]
+    round_history = game.get('round_history') or []
+    if len(round_history) < 2:
+        return
+
+    current_round = round_history.pop()
+    previous_round = round_history[-1]
+
+    game['revisit_stack'].append(current_round)
+    game['current_answers'] = []
+    game['answered_count'] = 0
+    game['current_round'] = previous_round
+
+    emit('update_status', {'answered': 0, 'total': len(game['players']) - 1}, to=room)
+    emit('next_round', previous_round, to=room)
 
 @socketio.on('start_thirty_seconds')
 def on_start_thirty_seconds(data):
@@ -370,7 +418,6 @@ def send_next_question(room):
     q_type = q_obj.get('type', 'open')
     payload = None
 
-    # Specifieke minigame logica
     if q_text == 'Wordchain':
         theme = random.choice(WORDCHAIN_THEMES) if WORDCHAIN_THEMES else 'Dieren'
         q_text = theme
@@ -384,7 +431,7 @@ def send_next_question(room):
         secret_word = random.choice(word_pool) if word_pool else 'regenboog'
         game['hangman'] = {
             'word': secret_word, 'guessed_letters': [], 'wrong_letters': [],
-            'lives': 10, 'finished': False, 'solved': False,
+            'lives': 10, 'finished': False, 'solved': False, 'hint_used': False,
         }
         q_type = 'hangman'
         payload = _build_hangman_state(game['hangman'])
@@ -397,7 +444,6 @@ def send_next_question(room):
 
     game['history'].append(q_text)
     
-    # Payload samenstellen voor de frontend
     emit_payload = {
         'category': cat, 
         'question': q_text, 
@@ -406,13 +452,14 @@ def send_next_question(room):
         'total_players': len(game['players']) - 1
     }
     
-    # Belangrijk: stuur de opties mee voor Would You Rather!
     if 'options' in q_obj:
         emit_payload['options'] = q_obj['options']
         
     if payload is not None:
         emit_payload['payload'] = payload
-        
+
+    game['current_round'] = emit_payload
+    game['round_history'].append(emit_payload)
     emit('next_round', emit_payload, to=room)
 
 def _hangman_is_solved(secret_word, guessed_letters):
