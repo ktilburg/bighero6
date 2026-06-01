@@ -195,8 +195,8 @@
             </div>
 
             <div id="thirty-wrap" style="display:none; margin-top: 25px;">
-                <div id="thirty-words" style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; font-size: 22px;"></div>
-                <h2 id="thirty-timer" style="color: #9853C6; margin-top: 30px; font-size: 40px;">30s</h2>
+                <div id="thirty-words" style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center; font-size: 22px; color:#222;"></div>
+                <h2 id="thirty-timer" style="color: #9853C6; margin-top: 30px; font-size: 40px;">Kijk op je papiertje</h2>
                 <button id="thirty-start-btn" class="ans-btn" style="display:none; margin-top: 10px;" onclick="requestThirtySecondsStart()">Start</button>
             </div>
 
@@ -215,13 +215,13 @@
         </div>
     </div>
 
-    <button id="back-btn" style="display:none;" onclick="requestBack()">← TERUG</button>
-    <button id="next-btn" style="display:none;" onclick="requestNext()">VOLGENDE ➔</button>
+    <button id="back-btn" style="display:none;" onclick="requestBack()">🡐 TERUG</button>
+    <button id="next-btn" style="display:none;" onclick="requestNext()">VOLGENDE 🡒</button>
 
     <script>
         const socket = io();
         const urlParams = new URLSearchParams(window.location.search);
-        const room = urlParams.get('code');
+        let room = urlParams.get('code');
         let myName = urlParams.get('name');
         let thirtyInterval;
         let thirtyRoundActive = false;
@@ -244,6 +244,20 @@
         }
 
         socket.emit('join_game', {room: room, name: myName});
+
+        socket.on('joined_game', (data) => {
+            room = data.room;
+        });
+
+        socket.on('name_assigned', (data) => {
+            myName = data.name;
+            if (myName === "HOST") document.body.classList.add('is-host');
+        });
+
+        socket.on('join_failed', () => {
+            document.getElementById('question-text').innerText = 'Nog geen game actief.';
+            document.getElementById('status-bar').innerText = 'Laat de host eerst een game starten.';
+        });
 
         socket.on('next_round', (data) => {
             clearInterval(thirtyInterval);
@@ -424,16 +438,11 @@
             const container = document.getElementById('thirty-words');
             const startBtn = document.getElementById('thirty-start-btn');
             const timer = document.getElementById('thirty-timer');
-            timer.innerText = (p.timer || 30) + "s";
-            startBtn.style.display = myName === "HOST" ? "inline-block" : "none";
-            startBtn.disabled = false;
             thirtyRoundActive = false;
-
-            if (myName === "HOST") {
-                container.innerHTML = '<span style="color: #999; font-style: italic;">Woorden zichtbaar voor spelers...</span>';
-            } else {
-                container.innerHTML = p.woorden.map(w => `<span style="background:#eee; padding:10px 15px; border-radius:15px; border:2px solid #000;">${w}</span>`).join(' ');
-            }
+            timer.innerText = "Kijk op je papiertje";
+            container.innerHTML = '';
+            startBtn.style.display = "none";
+            startBtn.disabled = true;
         }
 
         function beginThirtySecondsCountdown() {
