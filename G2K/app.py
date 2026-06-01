@@ -455,7 +455,7 @@ def on_start_thirty_seconds(data):
 def send_next_question(room):
     game = games[room]
     if not game['queue']:
-        emit('game_over', {"message": "Bedankt voor het spelen!", "category": "end"}, to=room)
+        emit('game_over', {"message": "Bedankt voor het spelen !", "category": "end"}, to=room)
         return
     
     game['answered_count'] = 0
