@@ -124,20 +124,8 @@
         <!-- Logo bovenin de kaart -->
         <img src="/static/images/get2know_logo.png" alt="Get2Know Logo" class="logo">
 
-        <!-- Stap 1: Code invoeren -->
         <div id="step-1">
-            <h2>Voer de game code in:</h2>
-            <input type="number" id="game-code" placeholder="Code" oninput="this.value=this.value.slice(0,4)">
-            <br>
-            <button class="primary-btn" onclick="checkCode()">Verder</button>
-            <p id="error-msg"></p>
-        </div>
-
-        <!-- Stap 2: Naam invoeren -->
-        <div id="step-2" style="display:none;">
-            <h2>Hoe heet je?</h2>
-            <input type="text" id="player-name" placeholder="Je naam" maxlength="15">
-            <br>
+            <h2>Klaar om te spelen?</h2>
             <button class="primary-btn" onclick="joinWithValues()">Start het spel</button>
         </div>
     </div>
@@ -146,50 +134,8 @@
     <a href="/host" class="host-access">Host menu</a>
 
     <script>
-        const socket = io();
-        let validRoom = "";
-
-        // Luister naar Enter toets in de inputs
-        document.getElementById('game-code').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkCode();
-        });
-        document.getElementById('player-name').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') joinWithValues();
-        });
-
-        function checkCode() {
-            const code = document.getElementById('game-code').value;
-            if(code) {
-                socket.emit('validate_code', {room: code});
-            } else {
-                document.getElementById('error-msg').innerText = "Vul eerst een code in.";
-            }
-        }
-
-        socket.on('code_valid', (data) => {
-            if(data.valid) {
-                validRoom = data.room;
-                if(data.custom_names === false) {
-                    // Als de host "geen namen" heeft ingesteld, direct doorsturen
-                    window.location.href = `/game?code=${validRoom}&name=Speler`;
-                } else {
-                    document.getElementById('step-1').style.display = 'none';
-                    document.getElementById('step-2').style.display = 'block';
-                    document.getElementById('player-name').focus();
-                }
-            } else {
-                document.getElementById('error-msg').innerText = "Code niet gevonden.";
-                document.getElementById('game-code').value = "";
-            }
-        });
-
         function joinWithValues() {
-            const name = document.getElementById('player-name').value.trim();
-            if(name) {
-                window.location.href = `/game?code=${validRoom}&name=${encodeURIComponent(name)}`;
-            } else {
-                alert("Vul aub een naam in.");
-            }
+            window.location.href = `/game`;
         }
     </script>
 </body>

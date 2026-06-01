@@ -90,6 +90,37 @@ QUESTIONS = {
     ],
 }
 
+
+def get_minigame_questions(include_thirty_seconds=True):
+    return [
+        q for q in QUESTIONS['minigames']
+        if include_thirty_seconds or q.get('q') != 'Thirty seconds'
+    ]
+
+
+def rebalance_queue(queue, max_streak=2, preserve_prefix=0):
+    if len(queue) <= max_streak:
+        return queue
+
+    balanced_queue = list(queue)
+    index = max(max_streak, preserve_prefix)
+
+    while index < len(balanced_queue):
+        streak_category = balanced_queue[index - 1][0]
+        if all(balanced_queue[index - offset][0] == streak_category for offset in range(1, max_streak + 1)):
+            swap_index = None
+            for candidate_index in range(index + 1, len(balanced_queue)):
+                if balanced_queue[candidate_index][0] != streak_category:
+                    swap_index = candidate_index
+                    break
+
+            if swap_index is not None:
+                balanced_queue[index], balanced_queue[swap_index] = balanced_queue[swap_index], balanced_queue[index]
+
+        index += 1
+
+    return balanced_queue
+
 # Load thirty-seconds lists 
 THIRTY_SECONDS_LISTS = []
 try:
@@ -124,12 +155,14 @@ except Exception:
     HANGMAN_WORDS = []
 
 games = {}
+ACTIVE_ROOM = None
 
 
 def build_question_queue(settings):
+    ice_count = min(max(3, int(settings.get('ice', 3))), len(QUESTIONS['ice_breakers']))
     ice_breakers = [('ice_breakers', q) for q in random.sample(
         QUESTIONS['ice_breakers'],
-        min(int(settings['ice']), len(QUESTIONS['ice_breakers']))
+        ice_count
     )]
     
     would_you_rather = [('would_you_rather', q) for q in random.sample(
@@ -142,10 +175,17 @@ def build_question_queue(settings):
         min(int(settings.get('st', 0)), len(QUESTIONS['statements']))
     )]
 
+    available_minigames = get_minigame_questions(False)
     minigames = [('minigames', q) for q in random.sample(
-        QUESTIONS['minigames'],
-        min(int(settings['mini']), len(QUESTIONS['minigames']))
+        available_minigames,
+        min(int(settings['mini']), len(available_minigames))
     )]
+
+    if settings.get('thirty_seconds_enabled', True):
+        thirty_seconds_question = next((q for q in QUESTIONS['minigames'] if q.get('q') == 'Thirty seconds'), None)
+        if thirty_seconds_question:
+            minigames.append(('minigames', thirty_seconds_question))
+            random.shuffle(minigames)
 
     get2know = [('get2know', q) for q in random.sample(
         QUESTIONS['get2know'],
@@ -153,9 +193,6 @@ def build_question_queue(settings):
     )]
 
     queue = list(ice_breakers)
-
-    if get2know:
-        queue.append(get2know.pop(0))
 
     active_pools = {
         'minigames': minigames,
@@ -170,6 +207,9 @@ def build_question_queue(settings):
         available_categories = [
             category for category, pool in active_pools.items() if pool
         ]
+
+        if last_category == 'ice_breakers' and 'get2know' in available_categories:
+            available_categories = [category for category in available_categories if category != 'get2know']
 
         if last_category in available_categories and streak >= 2 and len(available_categories) > 1:
             available_categories = [category for category in available_categories if category != last_category]
@@ -186,21 +226,26 @@ def build_question_queue(settings):
             last_category = next_category
             streak = 1
 
-    return queue
+    return rebalance_queue(queue, preserve_prefix=len(ice_breakers))
 
 @app.route('/')
 def index(): return render_template('index.html')
 
 @app.route('/host')
 def host_page():
+    mini_questions = get_minigame_questions(False)
     slider_maxes = {
         'ice': min(len(QUESTIONS['ice_breakers']), 10),
-        'mini': min(len(QUESTIONS['minigames']), 10),
+        'mini': min(len(mini_questions), 10),
         'deep': min(len(QUESTIONS['get2know']), 10),
         'wy': min(len(QUESTIONS['would_you_rather']), 10),
         'st': min(len(QUESTIONS['statements']), 10),
     }
     return render_template('host.html', slider_maxes=slider_maxes)
+
+@app.route('/host/lobby')
+def host_lobby_page():
+    return render_template('host_lobby.html')
 
 @app.route('/game')
 def game_page(): return render_template('game.html')
@@ -229,29 +274,24 @@ def game_page(): return render_template('game.html')
 #         'downvotes': feedback_scores[question]['downvotes'],
 #     }, to=request.sid)
 
-@socketio.on('validate_code')
-def on_validate(data):
-    room = data.get('room')
-    if room in games:
-        emit('code_valid', {'valid': True, 'room': room, 'custom_names': games[room]['settings'].get('custom_names', True)}, to=request.sid) # type: ignore
-    else:
-        emit('code_valid', {'valid': False}, to=request.sid) # type: ignore
-
 @socketio.on('create_game')
 def on_create(data):
+    global ACTIVE_ROOM
     room = str(random.randint(1000, 9999))
     settings = data.get('settings') or {}
     games[room] = {
         'players': [], 'history': [], 'settings': settings, 'queue': [], 'current_answers': [],
         'answered_count': 0, 'hangman': None, 'round_history': [], 'revisit_stack': [], 'current_round': None
     }
+    ACTIVE_ROOM = room
     join_room(room)
     emit('game_created', {'room': room}, to=request.sid) # type: ignore
 
 @socketio.on('join_game')
 def on_join(data):
-    room = data.get('room')
+    room = data.get('room') or ACTIVE_ROOM
     if room in games:
+        request_sid = getattr(request, 'sid', None)
         join_room(room)
         name = data.get('name')
         if not games[room]['settings'].get('custom_names', True) and name != "HOST":
@@ -259,7 +299,13 @@ def on_join(data):
         player = {"name": name, "emoji": random.choice(["🦁","🚀","🥑","👾","🎸","🍕"])}
         games[room]['players'].append(player)
         emit('player_joined', games[room]['players'], to=room)
-        emit('name_assigned', {'name': name}, to=request.sid) # type: ignore
+        if request_sid:
+            emit('joined_game', {'room': room}, to=request_sid)
+            emit('name_assigned', {'name': name}, to=request_sid) # type: ignore
+    else:
+        request_sid = getattr(request, 'sid', None)
+        if request_sid:
+            emit('join_failed', {'valid': False}, to=request_sid)
 
 @socketio.on('start_game')
 def on_start(data):
@@ -409,7 +455,7 @@ def on_start_thirty_seconds(data):
 def send_next_question(room):
     game = games[room]
     if not game['queue']:
-        emit('game_over', {"message": "Bedankt voor het spelen!", "category": "end"}, to=room)
+        emit('game_over', {"message": "Bedankt voor het spelen !", "category": "end"}, to=room)
         return
     
     game['answered_count'] = 0
@@ -448,7 +494,7 @@ def send_next_question(room):
         'category': cat, 
         'question': q_text, 
         'type': q_type,
-        'mode': game['settings']['mode'], 
+        'mode': game['settings'].get('mode', 'mondeling'), 
         'total_players': len(game['players']) - 1
     }
     
