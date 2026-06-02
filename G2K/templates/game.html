@@ -313,6 +313,7 @@
         let introShown = false;
         let currentQuestionData = null;
         let deepQuestionSkippedLastTime = false;
+        let groupIsReadyForDeep = false;
 
         if(myName === "HOST") document.body.classList.add('is-host');
 
@@ -388,7 +389,7 @@
                 document.body.classList.add('theme-' + data.category);
                 updateVisuals(data.category, data.type);
 
-                if (data.category === 'get2know' && myName === "HOST") {
+                if (data.category === 'get2know' && myName === "HOST" && !groupIsReadyForDeep) {
                     document.getElementById('question-text').innerText = "Diepgaande vraag";
                     document.getElementById('warning-subtitle').style.display = "block";
                     document.getElementById('warning-btn-container').style.display = "flex";
@@ -453,6 +454,7 @@
         function revealDeepQuestion() {
             if (myName !== "HOST" || !currentQuestionData) return;
             deepQuestionSkippedLastTime = false; 
+            groupIsReadyForDeep = true;
             renderNormalQuestionLayout(currentQuestionData);
         }
 
