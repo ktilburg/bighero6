@@ -5,7 +5,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #2c3e50; color: white; padding-top: 50px; }
-        .card { background: #34495e; padding: 30px; border-radius: 15px; display: inline-block; min-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .card { background: #34495e; padding: 30px; border-radius: 15px; display: inline-block; min-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 500px; text-align: initial; }
+        #setup-area { text-align: center; }
         .slider-box { margin: 15px 0; text-align: left; }
         .val { float: right; font-weight: bold; color: #f1c40f; }
         .toggle-row {
@@ -23,24 +24,67 @@
             width: 18px;
             height: 18px;
         }
-        textarea {
+        textarea, input[type="text"] {
             width: 100%;
-            min-height: 90px;
             padding: 10px;
             border-radius: 8px;
             border: none;
             margin-top: 8px;
             box-sizing: border-box;
             font: inherit;
+        }
+        textarea {
+            min-height: 90px;
             resize: vertical;
         }
         button { background: #27ae60; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
+        .btn-small { padding: 8px 15px; font-size: 0.95em; margin-top: 8px; background: #2980b9; width: 100%; }
         .player-tag { background: #e67e22; padding: 5px 15px; border-radius: 20px; margin: 5px; display: inline-block; }
         .room-status {
             margin-top: 20px;
             font-size: 1.1em;
         }
-        hr { border: 0; border-top: 1px solid #5d6d7e; margin: 20px 0; }
+        hr { border: 0; border-top: 1px solid #5d6d7e; margin: 20px 0; width: 100%; }
+
+        /* Custom vragenlijst styling */
+        .custom-questions-list {
+            text-align: left;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #2c3e50;
+            border-radius: 8px;
+            padding: 5px;
+        }
+        .custom-question-item {
+            background: #34495e;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+            word-break: break-word;
+        }
+        .remove-btn {
+            background: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0;
+            padding: 0;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+        .remove-btn:hover { background: #e74c3c; }
     </style>
 </head>
 <body>
@@ -62,6 +106,17 @@
             <div class="slider-box">Hangman woorden<br><textarea id="hangman-words" placeholder="Voeg extra woorden toe met komma's of nieuwe regels."></textarea></div>
             
             <hr>
+            
+            <div class="slider-box">
+                <label for="custom-question-input" style="font-weight: bold;">Zelf vragen toevoegen:</label>
+                <input type="text" id="custom-question-input" placeholder="Type hier je eigen vraag...">
+                <button type="button" class="btn-small" onclick="addCustomQuestion()">Voeg vraag toe</button>
+                
+                <div class="custom-questions-list" id="custom-questions-container">
+                    </div>
+            </div>
+
+            <hr>
 
             <button onclick="createGame()">Maak Lobby</button>
         </div>
@@ -70,6 +125,19 @@
     <script>
         const socket = io();
         let currentRoom = "";
+        let customQuestions = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const stored = localStorage.getItem("custom_game_questions");
+            if (stored) {
+                try {
+                    customQuestions = JSON.parse(stored);
+                } catch(e) {
+                    customQuestions = [];
+                }
+            }
+            renderCustomQuestions();
+        });
 
         function updateVal(id) { 
             const slider = document.getElementById(id);
@@ -85,6 +153,55 @@
                 .filter(Boolean);
         }
 
+        // Functie om een nieuwe vraag toe te voegen
+        function addCustomQuestion() {
+            const input = document.getElementById("custom-question-input");
+            const text = input.value.trim();
+            
+            if (text === "") return; // Geen lege vragen toevoegen
+
+            customQuestions.push(text);
+            localStorage.setItem("custom_game_questions", JSON.stringify(customQuestions));
+            
+            input.value = ""; // Maak input leeg
+            renderCustomQuestions();
+        }
+
+        // Functie om een vraag te verwijderen
+        function removeCustomQuestion(index) {
+            customQuestions.splice(index, 1);
+            localStorage.setItem("custom_game_questions", JSON.stringify(customQuestions));
+            renderCustomQuestions();
+        }
+
+        // Functie om het lijstje visueel up-to-date te brengen
+        function renderCustomQuestions() {
+            const container = document.getElementById("custom-questions-container");
+            container.innerHTML = "";
+
+            if (customQuestions.length === 0) {
+                container.innerHTML = '<div style="padding: 10px; color: #bbb; font-style: italic; text-align: center;">Nog geen eigen vragen toegevoegd.</div>';
+                return;
+            }
+
+            customQuestions.forEach((question, index) => {
+                const item = document.createElement("div");
+                item.className = "custom-question-item";
+                
+                const textSpan = document.createElement("span");
+                textSpan.innerText = question;
+                
+                const removeBtn = document.createElement("button");
+                removeBtn.className = "remove-btn";
+                removeBtn.innerHTML = "&times;";
+                removeBtn.onclick = () => removeCustomQuestion(index);
+                
+                item.appendChild(textSpan);
+                item.appendChild(removeBtn);
+                container.appendChild(item);
+            });
+        }
+
         function createGame() {
             const settings = {
                 ice: document.getElementById('ice').value,
@@ -95,7 +212,9 @@
                 hangman_words: parseWords(document.getElementById('hangman-words').value),
                 custom_names: false,
                 mode: 'mondeling',
-                thirty_seconds_enabled: document.getElementById('thirty-seconds-enabled').checked
+                thirty_seconds_enabled: document.getElementById('thirty-seconds-enabled').checked,
+                // Geef de opgeslagen custom vragen mee aan de backend settings!
+                custom_questions: customQuestions
             };
             socket.emit('create_game', {settings: settings});
         }

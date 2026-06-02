@@ -192,6 +192,12 @@ def build_question_queue(settings):
         min(int(settings['deep']), len(QUESTIONS['get2know']))
     )]
 
+    custom_questions = []
+    for q_text in settings.get('custom_questions', []):
+        if q_text.strip():
+            custom_questions.append(('custom', {"q": q_text.strip(), "type": "open"}))
+    random.shuffle(custom_questions)
+
     queue = list(ice_breakers)
 
     active_pools = {
@@ -199,11 +205,12 @@ def build_question_queue(settings):
         'get2know': get2know,
         'would_you_rather': would_you_rather,
         'statements': statements,
+        'custom': custom_questions
     }
     last_category = queue[-1][0] if queue else None
     streak = 1 if last_category in active_pools else 0
 
-    while active_pools['minigames'] or active_pools['get2know'] or active_pools['would_you_rather'] or active_pools['statements']:
+    while any(active_pools.values()):
         available_categories = [
             category for category, pool in active_pools.items() if pool
         ]

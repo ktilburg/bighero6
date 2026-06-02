@@ -109,6 +109,19 @@
 
         h1#question-text { font-size: 34px; font-weight: 800; margin: 0; color: #000; line-height: 1.2; }
 
+        body.theme-get2know h1#question-text,
+        body.theme-custom h1#question-text {
+            font-size: 38px;
+            line-height: 1.4;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        
+        body.theme-get2know .q-card,
+        body.theme-custom .q-card {
+            min-height: 340px;
+        }
+
         #wyr-options-container {
             display: none; grid-template-columns: 1fr 1fr; gap: 30px;
             margin-top: 40px; width: 100%; position: relative; z-index: 5;
@@ -225,6 +238,7 @@
         <img src="/static/images/background_rounded_line_orange.png">
         <img src="/static/images/background_rounded_line_green.png">
         <img src="/static/images/background_rounded_line_yellow.png">
+        <img src="/static/images/background_rounded_line_pink.png">
     </div>
 
     <div id="intro-overlay">
@@ -395,7 +409,7 @@
                 }
 
                 if (myName === "HOST") {
-                document.getElementById('stop-btn').style.display = "block";
+                    document.getElementById('stop-btn').style.display = "block";
                     document.getElementById('next-btn').style.display = "block";
                     document.getElementById('back-btn').style.display = "block";
                 }
@@ -453,6 +467,12 @@
                 bgLines.style.backgroundImage = "url('/static/images/background_rounded_line_yellow.png')";
                 sTL.style.display = "none"; 
                 sBR.style.display = "none";
+            }
+            else if (cat === 'custom') {
+                logo.src = "/static/images/custom_question_header.png";
+                bgLines.style.backgroundImage = "url('/static/images/background_rounded_line_pink.png')";
+                sTL.src = "/static/images/star_l_pink.png";
+                sBR.src = "/static/images/star_r_green.png";
             }
         }
 
