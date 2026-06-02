@@ -3,140 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get2Know - Join</title>
+    <title>Get2Know - Home</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
+        :root {
+            --card-shadow: 12px 12px 0px rgba(0,0,0,0.15);
+            --neo-shadow: 8px 8px 0px #000;
+            --statement-yellow: #f8e367;
+            --statement-yellow-hover: #eacb4c;
+        }
+
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             text-align: center; 
-            /* Volledig vullende achtergrond */
             background-image: url('/static/images/join_background.png');
+            background-attachment: fixed;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            
             margin: 0; 
-            height: 100vh;
+            padding: 80px 10px 40px 10px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            box-sizing: border-box;
         }
 
         .card { 
             background: white; 
-            padding: 50px 40px; 
+            padding: 70px 40px 50px 40px;
             border-radius: 40px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            box-shadow: var(--card-shadow); 
             width: 90%;
-            max-width: 600px; 
-            border: 2px solid #000; /* Subtiele zwarte rand zoals in screenshot */
+            max-width: 500px; 
+            border: 3px solid #000;
             position: relative;
+            box-sizing: border-box;
         }
 
-        .logo {
-            width: 80%;
-            max-width: 400px;
-            margin-bottom: 30px;
+        .theme-logo { 
+            position: absolute; 
+            top: -75px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 4; 
+            height: 127px; 
+            pointer-events: none;
         }
 
         h2 { 
             color: #000; 
-            margin-bottom: 20px; 
-            font-weight: 800;
-            font-size: 24px;
+            margin: 0 0 15px 0; 
+            font-weight: 900;
+            font-size: 28px;
         }
 
-        input { 
-            width: 80%; 
-            padding: 15px; 
-            margin: 10px 0; 
-            border: 2px solid #eee; 
-            border-radius: 15px; 
-            font-size: 18px; 
-            outline: none; 
-            text-align: center;
-            transition: border-color 0.3s;
+        .intro-text {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            padding: 0 10px;
         }
 
-        input:focus { 
-            border-color: #ffd700; 
-        }
-
-        /* De gele knop stijl uit het screenshot */
         .primary-btn { 
-            width: auto; 
-            padding: 15px 40px; 
-            background: #f8e367; /* Geel zoals in screenshot */
+            width: 100%; 
+            padding: 20px; 
+            background: var(--statement-yellow); 
             color: black; 
-            border: 2px solid #000; 
-            border-radius: 20px; 
+            border: 4px solid #000; 
+            border-radius: 30px; 
             cursor: pointer; 
             font-weight: 900; 
-            font-size: 18px; 
-            box-shadow: 4px 4px 0px #000; /* Harde schaduw effect */
-            transition: all 0.1s;
-            margin-top: 15px;
+            font-size: 24px; 
+            box-shadow: var(--neo-shadow); 
+            transition: background 0.1s, transform 0.1s, box-shadow 0.1s;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        .primary-btn:hover {
+            background: var(--statement-yellow-hover);
         }
 
         .primary-btn:active { 
-            transform: translate(2px, 2px); 
+            transform: translate(6px, 6px); 
             box-shadow: 2px 2px 0px #000; 
-        }
-
-        /* De Host-knop rechtsonder */
-        .host-access {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #f8e367;
-            color: black;
-            padding: 12px 25px;
-            border-radius: 15px;
-            text-decoration: none;
-            font-weight: 900;
-            font-size: 16px;
-            border: 2px solid #000;
-            box-shadow: 4px 4px 0px #000;
-            transition: all 0.1s;
-        }
-
-        .host-access:hover {
-            background: #fff;
-        }
-
-        .host-access:active {
-            transform: translate(2px, 2px); 
-            box-shadow: 2px 2px 0px #000; 
-        }
-
-        #error-msg {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-top: 10px;
-            min-height: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <!-- Logo bovenin de kaart -->
-        <img src="/static/images/get2know_logo.png" alt="Get2Know Logo" class="logo">
+        <img src="/static/images/get2know_logo.png" alt="Get2Know Logo" class="theme-logo">
 
         <div id="step-1">
-            <h2>Klaar om te spelen?</h2>
-            <button class="primary-btn" onclick="joinWithValues()">Start het spel</button>
+            <h2>Leer elkaar écht kennen!</h2>
+            
+            <div class="intro-text">
+                Get2Know is dé ultieme ijsbreker om vrienden, familie of collega's op een unieke manier te verbinden. 
+                Met een mix van scherpe dilemma's, diepgaande vragen, uitdagende minigames en hilarische statements leer je je medespelers pas écht goed kennen!
+            </div>
+
+            <a href="/host" class="primary-btn">Host het spel</a>
         </div>
     </div>
 
-    <!-- Host knop rechtsonder -->
-    <a href="/host" class="host-access">Host menu</a>
-
-    <script>
-        function joinWithValues() {
-            window.location.href = `/game`;
-        }
-    </script>
 </body>
 </html>

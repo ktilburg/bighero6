@@ -1,24 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get2Know - Lobby</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #2c3e50; color: white; padding-top: 50px; }
-        .card { background: #34495e; padding: 30px; border-radius: 15px; display: inline-block; min-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .player-tag { background: #e67e22; padding: 5px 15px; border-radius: 20px; margin: 5px; display: inline-block; }
-        .room-status { margin-top: 10px; font-size: 1.1em; }
-        button { background: #27ae60; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 1.1em; margin-top: 20px; }
-        .muted { color: #dfe6e9; }
+        :root {
+            --card-shadow: 12px 12px 0px rgba(0,0,0,0.15);
+            --neo-shadow: 8px 8px 0px #000;
+            --neo-shadow-sm: 4px 4px 0px #000;
+            --statement-yellow: #f8e367;
+            --statement-yellow-hover: #eacb4c;
+            --wyr-blue: #b4c7ed;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            
+            background-image: url('/static/images/join_background.png');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            margin: 0; 
+            padding: 80px 10px 40px 10px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .card { 
+            background: white; 
+            padding: 70px 40px 50px 40px;
+            border-radius: 40px; 
+            box-shadow: var(--card-shadow); 
+            width: 90%;
+            max-width: 500px; 
+            border: 3px solid #000;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .theme-logo { 
+            position: absolute; 
+            top: -75px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 4; 
+            height: 127px; 
+            pointer-events: none;
+        }
+
+        .room-status { 
+            margin: 10px 0 5px 0; 
+            font-size: 26px; 
+            font-weight: 900; 
+            color: #000;
+        }
+
+        .muted { 
+            color: #444; 
+            font-weight: 600; 
+            font-size: 15px;
+            margin: 0 0 25px 0;
+        }
+
+        #player-list {
+            margin: 20px 0 30px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .player-tag { 
+            background: var(--wyr-blue); 
+            color: #000; 
+            border: 3px solid #000;
+            padding: 8px 18px; 
+            border-radius: 20px; 
+            display: inline-block; 
+            font-weight: 800;
+            font-size: 16px;
+            box-shadow: var(--neo-shadow-sm);
+        }
+
+        .primary-btn { 
+            width: 100%; 
+            padding: 20px; 
+            background: var(--statement-yellow); 
+            color: black; 
+            border: 4px solid #000; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            font-weight: 900; 
+            font-size: 24px; 
+            box-shadow: var(--neo-shadow); 
+            transition: background 0.1s, transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
+
+        .primary-btn:hover:not(:disabled) {
+            background: var(--statement-yellow-hover);
+        }
+
+        .primary-btn:active:not(:disabled) { 
+            transform: translate(6px, 6px); 
+            box-shadow: 2px 2px 0px #000; 
+        }
+
+        .primary-btn:disabled {
+            background: #ccc;
+            border-color: #777;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <h1>Lobby</h1>
-        <div class="room-status">Game ready</div>
-        <p class="muted">Wacht tot iedereen binnen is, dan kun je starten.</p>
-        <div id="player-list"></div>
-        <button id="start-game-btn" onclick="startGame()">START HET SPEL</button>
+        <img src="/static/images/get2know_logo.png" alt="Get2Know Logo" class="theme-logo">
+        
+        <button id="start-game-btn" class="primary-btn" onclick="startGame()">Start het spel</button>
     </div>
 
     <script>
@@ -31,7 +143,10 @@
             list.innerHTML = '';
             players.forEach(player => {
                 if (player.name !== 'HOST') {
-                    list.innerHTML += `<span class="player-tag">${player.emoji} ${player.name}</span>`;
+                    const tag = document.createElement('span');
+                    tag.className = 'player-tag';
+                    tag.innerText = `${player.emoji} ${player.name}`;
+                    list.appendChild(tag);
                 }
             });
         }
@@ -48,12 +163,9 @@
             }
         });
 
-        socket.on('player_joined', (players) => {
-            renderPlayers(players);
-        });
-
         socket.on('join_failed', () => {
             document.querySelector('.room-status').innerText = 'Geen actieve lobby gevonden.';
+            document.querySelector('.muted').innerText = 'Controleer of de kamercode nog klopt.';
             document.getElementById('start-game-btn').disabled = true;
         });
 
