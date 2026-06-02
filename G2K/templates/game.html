@@ -160,56 +160,22 @@
             border-radius: 60px; font-weight: 900; cursor: pointer; box-shadow: 6px 6px 0px #000; font-size: 20px;
         }
 
-        #stop-confirm-overlay {
-            position: fixed;
-            inset: 0;
+        /* End-screen buttons */
+        #end-back-btn {
+            position: fixed; bottom: 40px; left: 40px; z-index: 11;
+            background: #ffffff; border: 3px solid #000; padding: 20px 35px;
+            border-radius: 60px; font-weight: 900; cursor: pointer; box-shadow: 6px 6px 0px #000; font-size: 20px;
             display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 100;
         }
 
-        #stop-confirm-card {
-            background: white;
-            border: 3px solid #000;
-            border-radius: 30px;
-            padding: 35px 30px;
-            box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.15);
-            max-width: 420px;
-            width: 90%;
+        #end-home-btn {
+            position: fixed; bottom: 40px; right: 120px; z-index: 11;
+            background: #FFD700; border: 3px solid #000; padding: 20px 35px; 
+            border-radius: 60px; font-weight: 900; cursor: pointer; box-shadow: 6px 6px 0px #000; font-size: 20px;
+            display: none;
         }
 
-        #stop-confirm-card h2 {
-            margin: 0 0 10px;
-            font-size: 28px;
-            color: #000;
-        }
-
-        #stop-confirm-card p {
-            margin: 0 0 25px;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .confirm-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .confirm-btn {
-            min-width: 110px;
-        }
-
-        .confirm-yes {
-            background: #e74c3c;
-        }
-
-        .confirm-no {
-            background: #2980b9;
-        }
+        /* confirmation overlay removed: stop button now ends immediately */
 
         #results-area { background: #fff; padding: 30px; border-radius: 25px; border: 3px solid #000; margin-top: 30px; display: none; text-align: left; width: 100%; box-sizing: border-box; font-size: 20px; }
         #wordchain-theme { font-size: 48px; font-weight: 900; color: #8e44ad; margin-top: 20px; text-transform: uppercase; }
@@ -286,20 +252,13 @@
         </div>
     </div>
 
-    <button id="stop-btn" style="display:none;" onclick="openStopConfirm()">EINDIG SPEL</button>
+    <button id="stop-btn" style="display:none;" onclick="confirmStopGame()">EINDIG SPEL</button>
     <button id="back-btn" style="display:none;" onclick="requestBack()">🡐 TERUG</button>
     <button id="next-btn" style="display:none;" onclick="requestNext()">VOLGENDE 🡒</button>
+    <button id="end-back-btn" style="display:none;" onclick="requestBack()">TERUG</button>
+    <button id="end-home-btn" style="display:none;" onclick="endHome()">HOME</button>
 
-    <div id="stop-confirm-overlay">
-        <div id="stop-confirm-card">
-            <h2>Weet je zeker dat je wilt stoppen?</h2>
-            <p>Je gaat dan naar het eindscherm.</p>
-            <div class="confirm-actions">
-                <button class="ans-btn confirm-btn confirm-yes" onclick="confirmStopGame()">JA</button>
-                <button class="ans-btn confirm-btn confirm-no" onclick="closeStopConfirm()">NEE</button>
-            </div>
-        </div>
-    </div>
+    <!-- confirmation overlay removed -->
 
     <script>
         const socket = io();
@@ -324,6 +283,8 @@
             document.getElementById('hangman-word').innerText = "";
             document.getElementById('thirty-words').innerHTML = "";
             document.getElementById('wordchain-theme').innerText = "";
+            document.getElementById('end-back-btn').style.display = "none";
+            document.getElementById('end-home-btn').style.display = "none";
         }
 
         socket.emit('join_game', {room: room, name: myName});
@@ -467,11 +428,17 @@
             document.getElementById('stop-btn').style.display = "none";
             document.getElementById('next-btn').style.display = "none";
             document.getElementById('back-btn').style.display = "none";
+            document.getElementById('end-back-btn').style.display = "block";
+            document.getElementById('end-home-btn').style.display = "block";
             document.getElementById('theme-logo').style.display = "none";
             document.getElementById('star-tl').style.display = "none";
             document.getElementById('star-br').style.display = "none";
             document.getElementById('bg-lines').style.backgroundImage = "none";
             document.getElementById('game-body').style.backgroundColor = "var(--green-line)";
+        }
+
+        function endHome() {
+            window.location.href = '/';
         }
 
         function sendAnswer() {
@@ -500,16 +467,7 @@
             socket.emit('request_back', {room: room});
         }
 
-        function openStopConfirm() {
-            document.getElementById('stop-confirm-overlay').style.display = 'flex';
-        }
-
-        function closeStopConfirm() {
-            document.getElementById('stop-confirm-overlay').style.display = 'none';
-        }
-
         function confirmStopGame() {
-            closeStopConfirm();
             showEndScreen('Spel gestopt');
         }
 
