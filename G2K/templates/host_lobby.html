@@ -129,9 +129,7 @@
 
     <div class="card">
         <img src="/static/images/get2know_logo.png" alt="Get2Know Logo" class="theme-logo">
-        
-        <div class="room-status">Kamercode: <strong id="room-code-display">...</strong></div>
-        <div class="muted" id="room-help">Herlaad deze pagina met dezelfde code om opnieuw in te loggen als host.</div>
+        <div class="muted" id="room-help"></div>
         <button id="start-game-btn" class="primary-btn" onclick="startGame()">Start het spel</button>
     </div>
 
@@ -142,20 +140,14 @@
 
         socket.emit('join_game', {room: room, name: 'HOST'});
 
-        if (room) {
-            document.getElementById('room-code-display').innerText = room;
-        }
-
         socket.on('joined_game', (data) => {
             if (!room && data.room) {
                 window.history.replaceState({}, '', `/host/lobby?room=${encodeURIComponent(data.room)}`);
-                document.getElementById('room-code-display').innerText = data.room;
             }
         });
 
         socket.on('join_failed', () => {
-            document.getElementById('room-code-display').innerText = 'Geen actieve lobby';
-            document.getElementById('room-help').innerText = 'Controleer of de kamercode nog klopt.';
+            document.getElementById('room-help').innerText = 'Er is iets fout gegaan bij het aanmaken van de lobby. Probeer het opnieuw.';
             document.getElementById('start-game-btn').disabled = true;
         });
 
