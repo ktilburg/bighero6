@@ -50,38 +50,28 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 OBJECT_NAMES = ["Banaan", "Koekenpan", "Stofzuiger", "Gitaar", "Cactus", "Laptop", "Ananas", "Vliegtuig", "Watermeloen", "Tandenborstel", "Wasmachine", "Robot"]
 QUESTIONS = {
     "ice_breakers": [
-        # {"q": "Wat was je allereerste bijbaantje?", "type": "open"},
-        # {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
+        {"q": "Pak iets uit je tas en leg uit hoe dit item jouw beschrijft  ", "type": "open"},
+        {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
-        # {"q": "Op een schaal van 1-10: Hoe erg ben je een ochtendmens?", "type": "scale"},
-        # {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "open"},
-        # {"q": "Would you rather? Zou je liever supersterk zijn of supersnel?", "type": "action"},
         {"q": "Welke superkracht zou je willen hebben?", "type": "open"},
-        # {"q": "Would you rather? Zou je liever de rest van je leven alleen maar fluisteren, of altijd schreeuwen?", "type": "action"},
-        # {"q": "Would you rather? Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een ander stemgeluid hebben?", "type": "action"},
-        {"q": "Wat voor serie/film/boek zou je opnieuw willen zien/lezen?", "type": "open"},
+        {"q": "Welke voor serie of film of boek zou je opnieuw willen zien/lezen?", "type": "open"},
+        {"q":"Als je een dag het leven van iemand anders zou mogen ervaren wie zou dat zijn?", "type": "open"},
     ],
     "minigames": [
-        # {"q": "Staarwedstrijd! De eerste die knippert verliest.", "type": "action"},
-        # {"q": "Wie kan het langst op één been staan met de ogen dicht?", "type": "action"},
         {"q": "Galgje","d":"Galgje is een spel waarbij je een woord moet raden door steeds een letter te kiezen. Je mag maar een beperkt aantal letters fout kiezen.","type": "action"},
         {"q": "Wordchain", "type": "action"},
         {"q": "Thirty seconds", "type": "action."},
-        # {"q": "Beeld een dier uit zonder geluid te maken. De rest raadt!", "type": "action"}
     ],
     "get2know": [
-        # {"q": "Waar ben je het meest dankbaar voor van de afgelopen week?", "type": "open"},
         {"q": "Wat is een eigenschap die je echt in anderen bewondert?", "type": "open"},
         {"q": "Wat is iets wat je echt wilt doen/leren dit jaar?", "type": "open"},
-        # {"q": "Wat is iets aan jou dat mensen niet meteen van je zouden verwachten?", "type": "open"},
+        {"q": "Wat is iets aan jou dat mensen niet meteen van je zouden verwachten?", "type": "open"},
         {"q": "Waar ben je trots op?", "type": "open"},
-        # {"q": "Wanneer heb je het gevoel dat iemand jou echt begrijpt? ", "type": "open"},
-        # {"q": "Wat voor kwaliteiten maken een goeie vriend?", "type": "open"},
-        # {"q": "Zou je liever vrienden zijn met iemand die heel veel op je lijkt qua intresses of juist totaal anders is?", "type": "open"}
     ],
     "would_you_rather": [
         {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
         {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
+        {"q": "Zou je liever voor altijd moeten huppelen of levenslang achteruit moeten lopen", "type": "multiple_choice", "options": ["Altijd huppelen", "Altijd achteruit lopen"]},
     ],
     "statements": [
         {"q": "Kwaliteit gaat altijd boven kwantiteit als het gaat om je sociale kring.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
