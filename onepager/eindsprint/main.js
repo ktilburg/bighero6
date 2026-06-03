@@ -99,7 +99,6 @@ function movePersona(direction) {
   track.style.transform = `translateX(${amount}vw)`;
 }
 
-// Generieke functie voor alle uitklapbare secties (Over ons, Sprint 0, Sprint 1)
 function toggleSection(contentId, arrowId) {
   const content = document.getElementById(contentId);
   const arrow = document.getElementById(arrowId);
@@ -111,5 +110,11 @@ function toggleSection(contentId, arrowId) {
     setTimeout(() => {
       content.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 300);
+  } else {
+    const headerId = contentId.replace("-container", "-header");
+    const header = document.getElementById(headerId);
+    if (header) {
+      header.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 }

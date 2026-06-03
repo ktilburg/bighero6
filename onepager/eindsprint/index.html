@@ -38,26 +38,17 @@
     <main style="display: flex; flex-direction: column; width: 100%; overflow-x: hidden; align-items: center;">
         
         <div id="wie-zijn-wij" style="display: flex; justify-content: center; width: 100%;">
-
-            <img src="images/desktop/Wie zijn wij.png" class="desktop-only"
-                alt="Wie zijn wij?... Big Hero 6 staat voor samenwerking, innovatie en impact. Net als in de film combineren wij verschillende talenten om samen tot één krachtig en doordacht eindresultaat te komen. Daarnaast fungeert Baymax in de film als een mentale steun voor Hiro: een companion die hem helpt wanneer hij het moeilijk heeft. Dit sluit aan bij ons uiteindelijke doel: jongeren ondersteunen zodat zij zich beter in hun vel voelen, onder andere door het bevorderen van sociaal contact"
-                style="width: 80vw; height: auto;">
-
-            <img src="images/mobile/Wie zijn wij.png" class="mobile-only"
-                alt="Wie zijn wij?... Big Hero 6 staat voor samenwerking, innovatie en impact. Net als in de film combineren wij verschillende talenten om samen tot één krachtig en doordacht eindresultaat te komen. Daarnaast fungeert Baymax in de film als een mentale steun voor Hiro: een companion die hem helpt wanneer hij het moeilijk heeft. Dit sluit aan bij ons uiteindelijke doel: jongeren ondersteunen zodat zij zich beter in hun vel voelen, onder andere door het bevorderen van sociaal contact"
-                style="width: 80vw; height: auto;">
-
+            <img src="images/desktop/Wie zijn wij.png" class="desktop-only" alt="Wie zijn wij?..." style="width: 80vw; height: auto;">
+            <img src="images/mobile/Wie zijn wij.png" class="mobile-only" alt="Wie zijn wij?..." style="width: 80vw; height: auto;">
         </div>
 
-        <img src="images/desktop/Ons team frame.png" class="desktop-only" alt=""
-            style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/mobile/Ons team frame.png" class="mobile-only" alt=""
-            style="width: 100vw; height: auto; overflow-x: hidden;">
-        <div>
+        <img src="images/desktop/Ons team frame.png" class="desktop-only" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+        <img src="images/mobile/Ons team frame.png" class="mobile-only" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+        
+        <div style="margin-top: 40px; margin-bottom: 40px;">
             <h1 class="title-kernwaarden">Onze kernwaarden</h1>
             <div class="carousel-container">
                 <div class="arrow prev" onclick="moveSlide(-1)"></div>
-
                 <div class="carousel-track" id="track">
                     <img src="images/kernwaarden/1vrijheid.png" alt="Vrijheid">
                     <img src="images/kernwaarden/2betrouwbaarheid.png" alt="Betrouwbaarheid">
@@ -65,9 +56,7 @@
                     <img src="images/kernwaarden/4gemak.png" alt="Gemak">
                     <img src="images/kernwaarden/5eerlijkheid.png" alt="Eerlijkheid">
                 </div>
-
                 <div class="arrow next" onclick="moveSlide(1)"></div>
-
             </div>
         </div>
 
@@ -80,7 +69,7 @@
                 <h1 class="title-kernwaarden">Sprint 0</h1>
                 <span id="collapsable-arrow-sprint0" class="arrow-icon">▼</span>
             </div>
-            <div id="sprint0-container" class="collapsible-content sprint-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <div id="sprint0-container" class="collapsible-content sprint-container" onclick="toggleSection('sprint0-container', 'collapsable-arrow-sprint0')" style="display: flex; flex-direction: column; align-items: center; gap: 20px; cursor: pointer;">
                 <img src="images/desktop/sprint 0/Situaties.png" id="situaties" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
                 <img src="images/desktop/sprint 0/Ontwerpvragen.png" alt="" style="width: 50vw; height: auto;">
                 <img src="images/desktop/sprint 0/Ons proces.png" id="ons-proces" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
@@ -97,7 +86,7 @@
                 <h1 class="title-kernwaarden">Sprint 1</h1>
                 <span id="collapsable-arrow-sprint1" class="arrow-icon">▼</span>
             </div>
-            <div id="sprint1-container" class="collapsible-content sprint-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <div id="sprint1-container" class="collapsible-content sprint-container" onclick="toggleSection('sprint1-container', 'collapsable-arrow-sprint1')" style="display: flex; flex-direction: column; align-items: center; gap: 20px; cursor: pointer;">
                 <img src="images/desktop/sprint 1/Ontwerpvragen.png" alt="" style="width: 50vw; height: auto;">
                 <img src="images/desktop/sprint 1/Insights algemeen.png" id="insights" alt="" style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
                 <img src="images/desktop/sprint 1/Key insights.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
@@ -114,45 +103,38 @@
                 <h1 class="title-kernwaarden">Sprint 2</h1>
                 <span id="collapsable-arrow-sprint2" class="arrow-icon">▼</span>
             </div>
-            <div id="sprint2-container" class="collapsible-content sprint-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-            <img src="images/desktop/sprint 2/Situaties.png" id="situaties" alt=""
-                style="width: 100vw; height: auto; overflow-x: hidden;">
-            <div class="persona-section">
-                <h1 class="title-kernwaarden">Onze individuele persona's</h1>
-                <div class="arrow prev" onclick="movePersona(-1)"></div>
-                <div class="arrow next" onclick="movePersona(1)"></div>
-                <div class="carousel-container persona-container">
-
-                    <div class="carousel-track" id="personaTrack">
-                        <div class="persona-group">
-                            <img src="images/desktop/sprint 2/personas/ISRA persona 1.png" alt="Persona 1" class="persona-img">
-                            <img src="images/desktop/sprint 2/personas/YIM persona 1.png" alt="Persona 2" class="persona-img">
-                        </div>
-                        <div class="persona-group">
-                            <img src="images/desktop/sprint 2/personas/KOEN persona 1.png" alt="Persona 3" class="persona-img">
-                            <img src="images/desktop/sprint 2/personas/DAVID persona 1.png" alt="Persona 4" class="persona-img">
-                        </div>
-                        <div class="persona-group">
-                            <img src="images/desktop/sprint 2/personas/KIANGA persona 1.png" alt="Persona 5" class="persona-img">
-                            <img src="images/desktop/sprint 2/personas/JEAN PAUL persona 1.png" alt="Persona 6" class="persona-img">
+            <div id="sprint2-container" class="collapsible-content sprint-container" onclick="toggleSection('sprint2-container', 'collapsable-arrow-sprint2')" style="display: flex; flex-direction: column; align-items: center; gap: 20px; cursor: pointer;">
+                <img src="images/desktop/sprint 2/Situaties.png" id="situaties" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                
+                <div class="persona-section" onclick="event.stopPropagation();">
+                    <h1 class="title-kernwaarden">Onze individuele persona's</h1>
+                    <div class="arrow prev" onclick="movePersona(-1)"></div>
+                    <div class="arrow next" onclick="movePersona(1)"></div>
+                    <div class="carousel-container persona-container">
+                        <div class="carousel-track" id="personaTrack">
+                            <div class="persona-group">
+                                <img src="images/desktop/sprint 2/personas/ISRA persona 1.png" alt="Persona 1" class="persona-img">
+                                <img src="images/desktop/sprint 2/personas/YIM persona 1.png" alt="Persona 2" class="persona-img">
+                            </div>
+                            <div class="persona-group">
+                                <img src="images/desktop/sprint 2/personas/KOEN persona 1.png" alt="Persona 3" class="persona-img">
+                                <img src="images/desktop/sprint 2/personas/DAVID persona 1.png" alt="Persona 4" class="persona-img">
+                            </div>
+                            <div class="persona-group">
+                                <img src="images/desktop/sprint 2/personas/KIANGA persona 1.png" alt="Persona 5" class="persona-img">
+                                <img src="images/desktop/sprint 2/personas/JEAN PAUL persona 1.png" alt="Persona 6" class="persona-img">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <img src="images/desktop/sprint 2/Onze definitieve persona.png" id="definitieve-persona" alt=""
-                style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">        
-            <img src="images/desktop/sprint 2/Key insights.png" id="insights" alt=""
-                style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-            <img src="images/desktop/sprint 2/Concepten.png" id="concepten" alt=""
-                style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-            <img src="images/desktop/sprint 2/Probe.png" id="probe" alt=""
-                style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-            <img src="images/desktop/sprint 2/Next steps doel.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
-            <img src="images/desktop/sprint 2/Next steps onderzoek.png" alt=""
-                style="width: 100vw; height: auto; overflow-x: hidden;">
-            <img src="images/desktop/sprint 2/Next steps ontwikkelen+testen.png" alt=""
-                style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 2/Onze definitieve persona.png" id="definitieve-persona" alt="" style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">        
+                <img src="images/desktop/sprint 2/Key insights.png" id="insights" alt="" style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 2/Concepten.png" id="concepten" alt="" style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 2/Probe.png" id="probe" alt="" style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 2/Next steps doel.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 2/Next steps onderzoek.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 2/Next steps ontwikkelen+testen.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
             </div>
         </div>
 
@@ -161,30 +143,18 @@
                 <h1 class="title-kernwaarden">Sprint 3</h1>
                 <span id="collapsable-arrow-sprint3" class="arrow-icon">▼</span>
             </div>
-            <div id="sprint3-container" class="collapsible-content sprint-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                <img src="images/desktop/sprint 3/enquete resultaten.png" id="probe" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
-
-                    <h1 class="title-kernwaarden">Prototype</h1>
-                    <img src="images/desktop/sprint 3/Prototype stap 1.png" alt=""
-                    style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-                    <img src="images/desktop/sprint 3/Prototype stap 2.png" alt=""
-                    style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-                    <img src="images/desktop/sprint 3/Prototype stap 3.png" alt=""
-                    style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-                    <img src="images/desktop/sprint 3/Prototype stap 4.png" alt=""
-                    style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-                <img src="images/desktop/sprint 3/Enquete.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
-                <img src="images/desktop/sprint 3/enquete resultaten.png" alt=""
-                    style="width: 90vw; height: auto; overflow-x: hidden; margin-bottom: 100px;">
+            <div id="sprint3-container" class="collapsible-content sprint-container" onclick="toggleSection('sprint3-container', 'collapsable-arrow-sprint3')" style="display: flex; flex-direction: column; align-items: center; gap: 20px; cursor: pointer;">
+                <h1 class="title-kernwaarden" style="margin-top: 20px !important;" onclick="event.stopPropagation();">Prototype</h1>
+                <img src="images/desktop/sprint 3/Prototype stap 1.png" alt="" style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 3/Prototype stap 2.png" alt="" style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 3/Prototype stap 3.png" alt="" style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 3/Prototype stap 4.png" alt="" style="width: 80vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 3/Enquete.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 3/enquete resultaten.png" alt="" style="width: 90vw; height: auto; overflow-x: hidden; margin-bottom: 100px;">
                 
-                <img src="images/desktop/sprint 3/Next steps onderzoek.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
-                <img src="images/desktop/sprint 3/Next steps ontwikkelen.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
-                <img src="images/desktop/sprint 3/Next steps testen.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 3/Next steps onderzoek.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 3/Next steps ontwikkelen.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 3/Next steps testen.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
             </div>
         </div>
 
@@ -193,27 +163,17 @@
                 <h1 class="title-kernwaarden">Sprint 4</h1>
                 <span id="collapsable-arrow-sprint4" class="arrow-icon">▼</span>
             </div>
-            <div id="sprint4-container" class="collapsible-content sprint-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                <img src="images/desktop/sprint 4/Situaties.png" id="situaties" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
+            <div id="sprint4-container" class="collapsible-content sprint-container" onclick="toggleSection('sprint4-container', 'collapsable-arrow-sprint4')" style="display: flex; flex-direction: column; align-items: center; gap: 20px; cursor: pointer;">
+                <img src="images/desktop/sprint 4/Situaties.png" id="situaties" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
                 <img src="images/desktop/sprint 4/Ontwerpvragen.png" id="ontwerpvragen" alt="" style="width: 50vw; height: auto;">
-                <img src="images/desktop/sprint 4/Prototype.png" id="probe" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
-                <img src="images/desktop/sprint 4/TestResultaten.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
+                <img src="images/desktop/sprint 4/Prototype.png" id="probe" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 4/TestResultaten.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden; margin-bottom: 75px;">
 
-                <img src="images/desktop/sprint 4/Next steps feedback.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
-                <img src="images/desktop/sprint 4/Next steps opnieuw testen.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
-                <img src="images/desktop/sprint 4/Next steps expo voorbereiden.png" alt=""
-                    style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 4/Next steps feedback.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 4/Next steps opnieuw testen.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
+                <img src="images/desktop/sprint 4/Next steps expo voorbereiden.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
             </div>
         </div>
-
-        <!-- <img src="images/desktop/Next steps feedback.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/desktop/Next steps opnieuw testen.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;">
-        <img src="images/desktop/Next steps expo voorbereiden.png" alt="" style="width: 100vw; height: auto; overflow-x: hidden;"> -->
     </main>
 
     <footer>

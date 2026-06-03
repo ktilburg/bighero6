@@ -65,16 +65,17 @@ html {
 .colored-section-container {
     width: 100vw;
     background-color: #D6C2C7;
-    margin-bottom: 50px;
+    padding: 20px 0;
     position: relative;
     left: 50%;
     right: 50%;
     transform: translateX(-50%); 
     box-sizing: border-box;
 }
+
 .uncolored-section-container {
     width: 100vw;
-    margin-bottom: 50px;
+    padding: 20px 0;
     position: relative;
     left: 50%;
     right: 50%;
@@ -89,6 +90,8 @@ html {
     cursor: pointer;
     gap: 20px;
     width: 100%;
+    height: auto;
+    padding: 10px 0;
 }
 
 .collapsible-content {
@@ -109,21 +112,29 @@ html {
     height: auto !important;
 }
 
-.team-section-container .title-kernwaarden,
-.sprint0-section-container .title-kernwaarden {
-    margin: 0;
+.title-kernwaarden {
+    font-family: Coolvetica, arial, sans-serif;
+    font-size: 8em;
+    text-align: center;
+    font-style: italic;
+    color: #732942;
+    margin: 0 !important; 
+    line-height: 1.1;
 }
 
 .arrow-icon {
-    font-size: 3rem;
+    font-size: 4rem;
     color: #732942;
     transition: transform 0.4s ease;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
 
 .content-open {
     max-height: 20000px;
     opacity: 1;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .arrow-rotate {
@@ -181,14 +192,6 @@ html {
 
 .next {
     right: 2vw;
-}
-
-.title-kernwaarden {
-    font-family: Coolvetica, arial, sans-serif;
-    font-size: 8em;
-    text-align: center;
-    font-style: italic;
-    color: #732942;
 }
 
 .persona-section {
