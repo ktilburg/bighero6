@@ -570,10 +570,6 @@
             showEndScreen('Bedankt voor het spelen !');
         }
 
-        socket.on('update_status', (data) => {
-            document.getElementById('status-bar').innerText = `${data.answered} / ${data.total} klaar`;
-        });
-
         socket.on('show_results', (data) => {
             const res = document.getElementById('results-area');
             res.innerHTML = "<strong>Resultaten:</strong><br>" + data.answers.map(a => `<b>${a.player}:</b> ${a.answer}`).join('<br>');
