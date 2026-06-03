@@ -300,7 +300,7 @@
     <button id="stop-btn" style="display:none;" onclick="confirmStopGame()">EINDIG SPEL</button>
     <button id="back-btn" style="display:none;" onclick="requestBack()">🡐 TERUG</button>
     <button id="next-btn" style="display:none;" onclick="requestNext()">VOLGENDE 🡒</button>
-    <button id="end-back-btn" style="display:none;" onclick="requestBack()">TERUG</button>
+    <button id="end-back-btn" style="display:none;" onclick="requestLastRound()">TERUG</button>
     <button id="end-home-btn" style="display:none;" onclick="endHome()">HOME</button>
 
     <script>
@@ -562,8 +562,12 @@
             socket.emit('request_back', {room: room});
         }
 
+        function requestLastRound() {
+            socket.emit('request_last_round', {room: room});
+        }
+
         function confirmStopGame() {
-            showEndScreen('Spel gestopt');
+            showEndScreen('Spel Bedankt voor het spelen !');
         }
 
         socket.on('update_status', (data) => {

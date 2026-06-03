@@ -467,6 +467,28 @@ def handle_back(data):
     emit('update_status', {'answered': 0, 'total': len(game['players']) - 1}, to=room)
     emit('next_round', previous_round, to=room)
 
+
+@socketio.on('request_last_round')
+def handle_last_round(data):
+    room = data.get('room')
+    if room not in games:
+        return
+
+    game = games[room]
+    target_round = game.get('current_round')
+    if not target_round:
+        round_history = game.get('round_history') or []
+        if not round_history:
+            return
+        target_round = round_history[-1]
+
+    game['current_answers'] = []
+    game['answered_count'] = 0
+    game['current_round'] = target_round
+
+    emit('update_status', {'answered': 0, 'total': len(game['players']) - 1}, to=room)
+    emit('next_round', target_round, to=room)
+
 @socketio.on('start_thirty_seconds')
 def on_start_thirty_seconds(data):
     room = data.get('room')
