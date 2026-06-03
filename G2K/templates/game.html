@@ -14,7 +14,7 @@
             --statement-yellow: #f8e367;
             --green-line: #e3f4e1;
             --warning-red: #ff7675;
-            --btn-green: #2ecc71;
+            --btn-green: #7ce6a9;
         }
 
         body { 
@@ -216,8 +216,8 @@
             box-shadow: 3px 3px 0px #000;
         }
 
-        .warn-choice-btn.deny { background-color: var(--warning-red); color: white; }
-        .warn-choice-btn.allow { background-color: var(--btn-green); color: white; }
+        .warn-choice-btn.deny { background-color: var(--warning-red); color: black; }
+        .warn-choice-btn.allow { background-color: var(--btn-green); color: black; }
     </style>
 </head>
 <body id="game-body">
@@ -271,8 +271,8 @@
                 <div id="hangman-meta" style="margin: 20px 0; font-size: 20px;"></div>
                 <div id="hangman-controls">
                     <input type="text" id="hangman-input" maxlength="1" style="width:60px; text-align:center; padding:15px; border:3px solid #000; font-size: 24px;">
-                    <button class="ans-btn" onclick="sendHangmanLetter()">Gok</button>
-                    <button class="ans-btn" style="background:#3498db;" onclick="sendHangmanHint()">💡 Hint</button>
+                    <button class="ans-btn" style="background:#7ce6a9; color: black;" onclick="sendHangmanLetter()">Raad</button>
+                    <button class="ans-btn" style="background:#9853C6; color: white;" onclick="sendHangmanHint()">Hint</button>
                 </div>
             </div>
 
