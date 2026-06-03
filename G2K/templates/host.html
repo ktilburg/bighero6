@@ -238,8 +238,8 @@
             
             <div class="toggle-row">
                 <label class="checkbox-row">
-                    <input type="checkbox" id="thirty-seconds-enabled" checked>
-                    <span>30 seconds</span>
+                    <input type="checkbox" id="thirty-seconds-enabled">
+                    <span>30 seconds met fysieke kaartjes</span>
                 </label>
             </div>
 
@@ -271,9 +271,10 @@
 
         function updateSliderBackground(id) {
             const slider = document.getElementById(id);
-            const max = slider.max || 100;
-            const value = slider.value;
-            const percentage = (value / max) * 100;
+            const max = parseFloat(slider.max) || 100;
+            const min = parseFloat(slider.min) || 0;
+            const value = parseFloat(slider.value);
+            const percentage = ((value - min) / (max - min)) * 100;
             slider.style.background = `linear-gradient(to right, var(--statement-pink) 0%, var(--statement-pink) ${percentage}%, #ffffff ${percentage}%, #ffffff 100%)`;
         }
 
