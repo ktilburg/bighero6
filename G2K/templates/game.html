@@ -306,8 +306,8 @@
     <script>
         const socket = io();
         const urlParams = new URLSearchParams(window.location.search);
-        let room = urlParams.get('code');
-        let myName = urlParams.get('name');
+        let room = urlParams.get('code') || urlParams.get('room');
+        let myName = urlParams.get('name') || 'HOST';
         let thirtyInterval;
         let thirtyRoundActive = false;
         let introShown = false;
@@ -345,10 +345,7 @@
             room = data.room;
         });
 
-        socket.on('name_assigned', (data) => {
-            myName = data.name;
-            if (myName === "HOST") document.body.classList.add('is-host');
-        });
+        if (myName === "HOST") document.body.classList.add('is-host');
 
         socket.on('join_failed', () => {
             document.getElementById('question-text').innerText = 'Nog geen game actief.';

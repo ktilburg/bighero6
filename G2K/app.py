@@ -297,23 +297,37 @@ def on_create(data):
 @socketio.on('join_game')
 def on_join(data):
     room = data.get('room') or ACTIVE_ROOM
-    if room in games:
-        request_sid = getattr(request, 'sid', None)
-        join_room(room)
-        name = data.get('name')
-        if not games[room]['settings'].get('custom_names', True) and name != "HOST":
-            name = random.choice(OBJECT_NAMES) + " " + str(random.randint(10, 99))
-        player = {"name": name, "emoji": random.choice(["🦁","🚀","🥑","👾","🎸","🍕"])}
-        games[room]['players'].append(player)
-        emit('player_joined', games[room]['players'], to=room)
-        if request_sid:
-            emit('joined_game', {'room': room}, to=request_sid)
-            emit('name_assigned', {'name': name}, to=request_sid) # type: ignore
-    else:
-        request_sid = getattr(request, 'sid', None)
+    name = (data.get('name') or '').strip() or 'HOST'
+    request_sid = getattr(request, 'sid', None)
+
+    if room not in games or name != 'HOST':
         if request_sid:
             emit('join_failed', {'valid': False}, to=request_sid)
+        return
 
+    game = games[room]
+    join_room(room)
+    game['host_sid'] = request_sid
+
+    existing_host = next((player for player in game['players'] if player['name'] == 'HOST'), None)
+    if existing_host is None:
+        game['players'].append({"name": 'HOST', "emoji": "🦁"})
+
+    emit('player_joined', game['players'], to=room)
+
+    if request_sid:
+        emit('joined_game', {'room': room}, to=request_sid)
+        emit('name_assigned', {'name': 'HOST'}, to=request_sid) # type: ignore
+
+        if game.get('current_round'):
+            emit('next_round', game['current_round'], to=request_sid)
+            emit('update_status', {
+                'answered': game.get('answered_count', 0),
+                'total': max(len(game['players']) - 1, 0)
+            }, to=request_sid)
+        elif not game.get('queue') and not game.get('current_round') and game.get('round_history'):
+            emit('game_over', {'message': 'Bedankt voor het spelen !', 'category': 'end'}, to=request_sid)
+    
 @socketio.on('start_game')
 def on_start(data):
     room = data.get('room')

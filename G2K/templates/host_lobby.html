@@ -130,6 +130,8 @@
     <div class="card">
         <img src="/static/images/get2know_logo.png" alt="Get2Know Logo" class="theme-logo">
         
+        <div class="room-status">Kamercode: <strong id="room-code-display">...</strong></div>
+        <div class="muted" id="room-help">Herlaad deze pagina met dezelfde code om opnieuw in te loggen als host.</div>
         <button id="start-game-btn" class="primary-btn" onclick="startGame()">Start het spel</button>
     </div>
 
@@ -138,40 +140,28 @@
         const urlParams = new URLSearchParams(window.location.search);
         const room = urlParams.get('room');
 
-        function renderPlayers(players) {
-            const list = document.getElementById('player-list');
-            list.innerHTML = '';
-            players.forEach(player => {
-                if (player.name !== 'HOST') {
-                    const tag = document.createElement('span');
-                    tag.className = 'player-tag';
-                    tag.innerText = `${player.emoji} ${player.name}`;
-                    list.appendChild(tag);
-                }
-            });
-        }
-
         socket.emit('join_game', {room: room, name: 'HOST'});
 
-        socket.on('player_joined', (players) => {
-            renderPlayers(players);
-        });
+        if (room) {
+            document.getElementById('room-code-display').innerText = room;
+        }
 
         socket.on('joined_game', (data) => {
             if (!room && data.room) {
                 window.history.replaceState({}, '', `/host/lobby?room=${encodeURIComponent(data.room)}`);
+                document.getElementById('room-code-display').innerText = data.room;
             }
         });
 
         socket.on('join_failed', () => {
-            document.querySelector('.room-status').innerText = 'Geen actieve lobby gevonden.';
-            document.querySelector('.muted').innerText = 'Controleer of de kamercode nog klopt.';
+            document.getElementById('room-code-display').innerText = 'Geen actieve lobby';
+            document.getElementById('room-help').innerText = 'Controleer of de kamercode nog klopt.';
             document.getElementById('start-game-btn').disabled = true;
         });
 
         function startGame() {
             socket.emit('start_game', {room: room});
-            window.location.href = `/game?name=HOST`;
+            window.location.href = `/game?code=${encodeURIComponent(room)}`;
         }
     </script>
 </body>
