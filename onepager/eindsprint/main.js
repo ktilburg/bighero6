@@ -99,9 +99,10 @@ function movePersona(direction) {
   track.style.transform = `translateX(${amount}vw)`;
 }
 
-function toggleTeamSection() {
-  const content = document.getElementById("team-content");
-  const arrow = document.getElementById("team-arrow");
+// Generieke functie voor alle uitklapbare secties (Over ons, Sprint 0, Sprint 1)
+function toggleSection(contentId, arrowId) {
+  const content = document.getElementById(contentId);
+  const arrow = document.getElementById(arrowId);
 
   content.classList.toggle("content-open");
   arrow.classList.toggle("arrow-rotate");

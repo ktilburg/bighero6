@@ -62,11 +62,19 @@ html {
     box-sizing: border-box;
 }
 
-.team-section-container {
+.colored-section-container {
     width: 100vw;
     background-color: #D6C2C7;
     margin-bottom: 50px;
-    padding: 40px 0;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%); 
+    box-sizing: border-box;
+}
+.uncolored-section-container {
+    width: 100vw;
+    margin-bottom: 50px;
     position: relative;
     left: 50%;
     right: 50%;
@@ -95,7 +103,14 @@ html {
     width: 100%;
 }
 
-.team-section-container .title-kernwaarden {
+.collapsible-content img {
+    flex-shrink: 0;
+    object-fit: contain;
+    height: auto !important;
+}
+
+.team-section-container .title-kernwaarden,
+.sprint0-section-container .title-kernwaarden {
     margin: 0;
 }
 
@@ -106,7 +121,7 @@ html {
 }
 
 .content-open {
-    max-height: 5000px;
+    max-height: 20000px;
     opacity: 1;
     margin-top: 20px;
 }
