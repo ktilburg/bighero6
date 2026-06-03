@@ -54,7 +54,7 @@ QUESTIONS = {
         {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
         {"q": "Welke superkracht zou je willen hebben?", "type": "open"},
-        {"q": "Welke voor serie of film of boek zou je opnieuw willen zien/lezen?", "type": "open"},
+        {"q": "Welke voor serie of film of boek zou je opnieuw willen zien/lezen als je alles erover kon vergeten?", "type": "open"},
         {"q":"Als je een dag het leven van iemand anders zou mogen ervaren wie zou dat zijn?", "type": "open"},
     ],
     "minigames": [
@@ -72,7 +72,7 @@ QUESTIONS = {
         {"q": "Zou je liever een jaar lang geen muziek luisteren of een jaar lang geen sociale media gebruiken?", "type": "multiple_choice", "options": ["Een jaar lang geen muziek luisteren", "Een jaar lang geen sociale media gebruiken"]},
         {"q": "Zou je liever elke ochtend wakker worden met een ander kapsel, of elke dag een andere stem hebben?", "type": "multiple_choice", "options": ["Elke ochtend met een ander kapsel", "Elke dag een andere stem"]},
         {"q": "Zou je liever voor altijd moeten huppelen of levenslang achteruit moeten lopen", "type": "multiple_choice", "options": ["Altijd huppelen", "Altijd achteruit lopen"]},
-    ],
+        {"q": "Nooit meer naar het buitenland kunnen gaan, maar wél gratis in Nederland kunnen wonen of gratis in het buitenland wonen, maar nooit meer naar Nederland kunnen gaan?", "type": "multiple_choice", "options": ["Nederland", "Buitenland"]},],
     "statements": [
         {"q": "Kwaliteit gaat altijd boven kwantiteit als het gaat om je sociale kring.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
         {"q": "Sociale media heeft sociale contacten oppervlakkiger gemaakt.", "type": "multiple_choice", "options": ["Eens", "Oneens"]},
@@ -149,7 +149,7 @@ ACTIVE_ROOM = None
 
 
 def build_question_queue(settings):
-    ice_count = min(max(3, int(settings.get('ice', 3))), len(QUESTIONS['ice_breakers']))
+    ice_count = min(max(1, int(settings.get('ice', 3))), len(QUESTIONS['ice_breakers']))
     ice_breakers = [('ice_breakers', q) for q in random.sample(
         QUESTIONS['ice_breakers'],
         ice_count
