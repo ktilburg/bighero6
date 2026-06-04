@@ -1,11 +1,8 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, join_room, emit
-from collections import defaultdict
-import csv
 import os
 import random
 import json
-from threading import Lock
 
 app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'deepconnect-secure-key'
