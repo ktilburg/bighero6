@@ -18,7 +18,7 @@ QUESTIONS = {
         {"q": "Pizza met ananas: Culinair hoogstandje of een misdaad?", "type": "multiple_choice", "options": ["Geniaal", "Misdaad"]},
         {"q": "Als je voor de rest van je leven nog maar één gerecht mocht eten, wat zou dat zijn?", "type": "open"},
         {"q": "Welke superkracht zou je willen hebben?", "type": "open"},
-        {"q": "Welke voor serie of film of boek zou je opnieuw willen zien/lezen als je alles erover kon vergeten?", "type": "open"},
+        {"q": "Welke serie of film of boek zou je opnieuw willen zien/lezen als je alles erover kon vergeten?", "type": "open"},
         {"q":"Als je een dag het leven van iemand anders zou mogen ervaren wie zou dat zijn?", "type": "open"},
     ],
     "minigames": [
@@ -74,16 +74,6 @@ def rebalance_queue(queue, max_streak=2, preserve_prefix=0):
         index += 1
 
     return balanced_queue
-
-THIRTY_SECONDS_LISTS = []
-try:
-    _path = os.path.join(os.path.dirname(__file__), 'thirty_seconds.json')
-    if os.path.exists(_path):
-        with open(_path, 'r', encoding='utf-8') as _f:
-            _data = json.load(_f)
-            THIRTY_SECONDS_LISTS = _data.get('lists', []) or []
-except Exception:
-    THIRTY_SECONDS_LISTS = []
 
 WORDCHAIN_THEMES = []
 try:

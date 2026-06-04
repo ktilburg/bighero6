@@ -1,9 +1,3 @@
 {
-  "themes": [
-    "Dieren",
-    "Sport",
-    "landen",
-    "Muziek",
-    "Films en series"
-  ]
+  "themes": ["Dieren", "Sport", "Landen", "Muziek", "Films en series"]
 }
