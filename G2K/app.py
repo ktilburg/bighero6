@@ -11,42 +11,6 @@ app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'deepconnect-secure-key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# alleen voor testen en feedback 
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# FEEDBACK_FILE = os.path.join(BASE_DIR, 'feedback.xls')
-# feedback_lock = Lock()
-# feedback_scores = defaultdict(lambda: {'upvotes': 0, 'downvotes': 0})
-# # Feedback systeem 
-
-# def load_feedback_scores():
-#     if not os.path.exists(FEEDBACK_FILE):
-#         return
-#     with open(FEEDBACK_FILE, 'r', encoding='utf-8', newline='') as feedback_handle:
-#         reader = csv.DictReader(feedback_handle, delimiter='\t')
-#         for row in reader:
-#             question = row.get('question', '').strip()
-#             if not question:
-#                 continue
-#             feedback_scores[question] = {
-#                 'upvotes': int(row.get('upvotes', 0) or 0),
-#                 'downvotes': int(row.get('downvotes', 0) or 0),
-#             }
-
-
-# def save_feedback_scores():
-#     with open(FEEDBACK_FILE, 'w', encoding='utf-8', newline='') as feedback_handle:
-#         writer = csv.DictWriter(feedback_handle, fieldnames=['question', 'upvotes', 'downvotes'], delimiter='\t')
-#         writer.writeheader()
-#         for question, counts in sorted(feedback_scores.items()):
-#             writer.writerow({
-#                 'question': question,
-#                 'upvotes': counts['upvotes'],
-#                 'downvotes': counts['downvotes'],
-#             })
-
-
-# load_feedback_scores()
-
 OBJECT_NAMES = ["Banaan", "Koekenpan", "Stofzuiger", "Gitaar", "Cactus", "Laptop", "Ananas", "Vliegtuig", "Watermeloen", "Tandenborstel", "Wasmachine", "Robot"]
 QUESTIONS = {
     "ice_breakers": [
@@ -111,7 +75,6 @@ def rebalance_queue(queue, max_streak=2, preserve_prefix=0):
 
     return balanced_queue
 
-# Load thirty-seconds lists 
 THIRTY_SECONDS_LISTS = []
 try:
     _path = os.path.join(os.path.dirname(__file__), 'thirty_seconds.json')
@@ -122,7 +85,6 @@ try:
 except Exception:
     THIRTY_SECONDS_LISTS = []
 
-# Load wordchain themes 
 WORDCHAIN_THEMES = []
 try:
     _path = os.path.join(os.path.dirname(__file__), 'wordchain.json')
@@ -133,7 +95,6 @@ try:
 except Exception:
     WORDCHAIN_THEMES = []
 
-# Load galgje words 
 HANGMAN_WORDS = []
 try:
     _path = os.path.join(os.path.dirname(__file__), 'galgje.json')
@@ -248,29 +209,6 @@ def host_lobby_page():
 def game_page(): return render_template('game.html')
 
 
-# @socketio.on('submit_feedback')
-# def on_feedback(data):
-#     question = (data.get('question') or '').strip()
-#     vote = data.get('vote')
-#     if not question or vote not in ('up', 'down'):
-#         emit('feedback_saved', {'ok': False}, to=request.sid)
-#         return
-
-#     with feedback_lock:
-#         counts = feedback_scores[question]
-#         if vote == 'up':
-#             counts['upvotes'] += 1
-#         else:
-#             counts['downvotes'] += 1
-#         save_feedback_scores()
-
-#     emit('feedback_saved', {
-#         'ok': True,
-#         'question': question,
-#         'upvotes': feedback_scores[question]['upvotes'],
-#         'downvotes': feedback_scores[question]['downvotes'],
-#     }, to=request.sid)
-
 @socketio.on('create_game')
 def on_create(data):
     global ACTIVE_ROOM
@@ -282,7 +220,7 @@ def on_create(data):
     }
     ACTIVE_ROOM = room
     join_room(room)
-    emit('game_created', {'room': room}, to=request.sid) # type: ignore
+    emit('game_created', {'room': room}, to=request.sid)
 
 @socketio.on('join_game')
 def on_join(data):
@@ -307,7 +245,7 @@ def on_join(data):
 
     if request_sid:
         emit('joined_game', {'room': room}, to=request_sid)
-        emit('name_assigned', {'name': 'HOST'}, to=request_sid) # type: ignore
+        emit('name_assigned', {'name': 'HOST'}, to=request_sid)
 
         if game.get('current_round'):
             emit('next_round', game['current_round'], to=request_sid)
@@ -391,7 +329,6 @@ def on_hangman_hint(data):
         emit('hangman_state', _build_hangman_state(hangman), to=room)
         return
 
-    # Lose one life for using hint
     hangman['lives'] -= 1
     hangman['hint_used'] = True
     
@@ -402,7 +339,6 @@ def on_hangman_hint(data):
         revealed_letter = random.choice(unguessed)
         hangman['guessed_letters'].append(revealed_letter)
     
-    # Check solved
     solved = _hangman_is_solved(secret_word, hangman['guessed_letters'])
     hangman['solved'] = solved
     hangman['finished'] = solved or hangman['lives'] <= 0
